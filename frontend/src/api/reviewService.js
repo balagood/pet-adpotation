@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/reviews";
+const API_URL = "https://pet-adpotations.onrender.com/reviews";
 
 export const addReview = async (data) => {
 

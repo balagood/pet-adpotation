@@ -113,7 +113,7 @@ const handleReview = async () => {
 
       {pet.photos && pet.photos.length > 0 && (
         <img
-          src={`http://localhost:3000${pet.photos[0]}`}
+          src={`https://pet-adpotations.onrender.com${pet.photos[0]}`}
           alt={pet.name}
           className="w-full h-60 object-cover rounded mb-4"
         />

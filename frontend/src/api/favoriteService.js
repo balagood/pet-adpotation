@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/favorites";
+const API_URL = "https://pet-adpotations.onrender.com/favorites";
 
 export const addFavorite = async (data) => {
   const res = await axios.post(`${API_URL}/add`, data);

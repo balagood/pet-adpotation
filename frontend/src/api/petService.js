@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/pets"; // base URL for pets
+const API_URL = "https://pet-adpotations.onrender.com/pets"; // base URL for pets
 
 export const addPet = async (petData,file) => {
   //const res = await axios.post(`${API_URL}/addPets`, petData);
