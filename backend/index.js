@@ -30,8 +30,13 @@ app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 
 app.listen(process.env.PORT, () => {
-    console.log(`Server is listening to the port ${process.env.PORT}`)
+    console.log(`Server is listening to the port`)
 })
 
+
+const cors = require("cors");
+app.use(cors({
+  origin: ["https://petadoptionstask.netlify.app"]
+}));
 
 app.use('/uploads',express.static(path.join(process.cwd(), "uploads")))
