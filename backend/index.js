@@ -18,6 +18,16 @@ dotenv.config()
 
 const app = express()
 
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://petadoptionstask.netlify.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}))
+
+
 //app.use(cors())
 app.use(express.json())
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
@@ -30,9 +40,6 @@ app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 
 
-app.use(cors({
-  origin: ["https://petadoptionstask.netlify.app"]
-}));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening to the port`)
