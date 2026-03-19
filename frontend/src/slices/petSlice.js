@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const fetchPets = createAsyncThunk("pets/getPets", async (filters = {}) => {
   const query = new URLSearchParams(filters).toString();
-  const url = query ? `https://pet-adpotations.onrender.com/application/pets/getPets?${query}` : `https://pet-adpotations.onrender.com/application/pets/getPets`;
+  const url = query ? `https://pet-adpotations.onrender.com/pets/getPets?${query}` : `https://pet-adpotations.onrender.com/pets/getPets`;
   const res = await axios.get(url);
   return res.data;
 

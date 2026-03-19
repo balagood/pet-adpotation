@@ -48,7 +48,7 @@ const PetCard = ({ pet }) => {
           {pet.photos.map((url, i) => (
             <img
               key={i}
-              src={`https://pet-adpotations.onrender.com/application${url}`}
+              src={`https://pet-adpotations.onrender.com${url}`}
               alt={pet.name}
               className="w-full h-48 object-cover rounded"
             />
