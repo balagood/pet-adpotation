@@ -18,7 +18,7 @@ dotenv.config()
 
 const app = express()
 
-app.use(cors())
+//app.use(cors())
 app.use(express.json())
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 
@@ -29,14 +29,15 @@ app.use('/application',applicationRoutes)
 app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 
+
+app.use(cors({
+  origin: ["https://petadoptionstask.netlify.app"]
+}));
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening to the port`)
 })
 
 
-const cors = require("cors");
-app.use(cors({
-  origin: ["https://petadoptionstask.netlify.app"]
-}));
 
 app.use('/uploads',express.static(path.join(process.cwd(), "uploads")))
