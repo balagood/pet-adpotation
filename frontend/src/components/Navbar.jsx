@@ -22,7 +22,7 @@ const Navbar = () => {
         <button
           onClick={() => {
             dispatch(logout());
-            window.location.href = "/login";
+            window.location.href = "/";
           }}
           className="w-full text-left px-3 py-2 bg-red-500 rounded mb-4"
         >
