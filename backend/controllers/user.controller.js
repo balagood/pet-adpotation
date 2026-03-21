@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import User from "../models/User.js"
 import jwt from "jsonwebtoken";
 import {generateAccessToken,generateRefreshToken } from "../helpers/tokenHelper.js"
+import {sendMail} from "../helpers/mailHelper.js"
 
 export const registerUser = async (req, res) => {
   try {
@@ -22,6 +23,11 @@ export const registerUser = async (req, res) => {
     await user.save();
 
     res.status(201).json({ message: 'User registered successfully' });
+    await sendMail({
+    to: user.email,
+    subject: "Welcome to Pet Adoptation",
+    htmlContent: `<h2>Welcome ${user.name}</h2><p>Your account created successfully.</p>`,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
