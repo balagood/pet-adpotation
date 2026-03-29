@@ -20,7 +20,7 @@ const app = express()
 
 app.use(cors({
   origin: [
-    "http://localhost:3000",
+    "http://localhost:5173",
     "https://petadoptionstask.netlify.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -47,4 +47,6 @@ app.listen(process.env.PORT, () => {
 
 
 
-app.use('/uploads',express.static(path.join(process.cwd(), "uploads")))
+//app.use('/uploads',express.static(path.join(process.cwd(), "uploads")))
+
+app.use("/uploads", express.static("uploads"));

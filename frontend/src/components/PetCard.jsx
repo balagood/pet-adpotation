@@ -4,6 +4,7 @@ import { updatePet } from "../slices/petSlice";
 import { addPet } from "../api/petService";
 import { addFav, removeFav, fetchFavorites } from "../slices/favoriteSlice";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config";
 
 const PetCard = ({ pet }) => {
 
@@ -48,7 +49,8 @@ const PetCard = ({ pet }) => {
           {pet.photos.map((url, i) => (
             <img
               key={i}
-              src={`https://pet-adpotations.onrender.com${url}`}
+              //src={`https://pet-adpotations.onrender.com${url}`}
+              src={`${BASE_URL}${url}`}
               alt={pet.name}
               className="w-full h-48 object-cover rounded"
             />
@@ -62,8 +64,8 @@ const PetCard = ({ pet }) => {
       <p>Size: {pet.size}</p>
       <p>Status: {pet.status}</p>
 
-      <button onClick={handleEdit} className="mt-2 px-4 py-2 bg-green-500 text-white rounded ml-2">Edit</button>
-      <button onClick={() => navigate(`/pet/${pet._id}`)} className="mt-2 px-4 py-2 bg-green-500 text-white rounded ml-2">View Details</button>
+      <button onClick={handleEdit} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">Edit</button>
+      <button onClick={() => navigate(`/pet/${pet._id}`)} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">View Details</button>
       {user?.role === "adopter" && (<button onClick={handleFavorite} className={`mt-3 px-4 py-2 rounded text-white transition ml-2 ${isFav? "bg-red-500 hover:bg-red-600": "bg-green-500 hover:bg-green-600"}`}>
     {isFav ? "Saved" : "Save"}</button>)}
       {/* <button onClick={handleUpdate} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Mark as Adopted</button> */}
