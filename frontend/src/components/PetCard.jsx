@@ -38,7 +38,7 @@ const PetCard = ({ pet }) => {
       <p>Size: {pet.size}</p>
       <p>Status: {pet.status}</p>
       <div className="flex gap-2 mt-3">
-        <button onClick={handleEdit} className="px-3 py-1 bg-blue-500 text-white rounded">Edit</button>
+       {/*  <button onClick={handleEdit} className="px-3 py-1 bg-blue-500 text-white rounded">Edit</button> */}
         <button onClick={() => navigate(`/pet/${pet._id}`)} className="px-3 py-1 bg-gray-500 text-white rounded">View Details</button>
         {user?.role === "adopter" && (<button onClick={handleFavorite} className={`px-3 py-1 rounded text-white transition ml-2 ${isFav? "bg-red-500 hover:bg-red-600": "bg-green-500 hover:bg-green-600"}`}>{isFav ? "Saved" : "Save"}</button>)}
       </div>
