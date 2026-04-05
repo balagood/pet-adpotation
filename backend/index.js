@@ -40,7 +40,8 @@ app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 
 
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+//app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static("uploads"));
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening to the port`)
 })
