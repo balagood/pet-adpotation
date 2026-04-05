@@ -112,7 +112,7 @@ const handleReview = async () => {
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-2">{pet.name}</h2>
       <div className="grid grid-cols-2 gap-2 mb-4">
-        {pet.photos?.length > 0 ? (pet.photos.map((img, index) => (<img key={index} src={`${BASE_URL}{pet.photos[0]}`} className="h-40 w-full object-cover rounded"/>))) : (<img src="/no-image.png" className="h-40 w-full object-cover rounded" />)}
+        {pet.photos?.length > 0 ? (pet.photos.map((img, index) => (<img key={index} src={`${BASE_URL}${img}`} className="h-40 w-full object-cover rounded"/>))) : (<img src="/no-image.png" className="h-40 w-full object-cover rounded" />)}
       </div>
       <p><strong>Breed:</strong> {pet.breed || "No Breed"}</p>
       <p><strong>Age:</strong> {pet.age || "No Age"}</p>
