@@ -29,14 +29,39 @@ export const removeFav = createAsyncThunk(
 
 const slice = createSlice({
   name: "favorites",
-  initialState: { list: [] },
+  initialState: { list: [],loading:false,error:null },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(addFav.fulfilled, (state, action) => {
+          state.list.push(action.payload);
+      })
+
+      .addCase(fetchFavorites.pending, (state) => {
+          state.loading = true;
+      })
       .addCase(fetchFavorites.fulfilled, (state, action) => {
+        state.loading = false;
         state.list = action.payload;
       })
+      .addCase(fetchFavorites.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+            
+      /*
+      comment the old code
+      .addCase(fetchFavorites.fulfilled, (state, action) => {
+        state.list = action.payload;
+      })*/
+
       .addCase(removeFav.fulfilled, (state, action) => {
+          state.list = state.list.filter(
+          (f) => f.petId?._id !== action.payload.petId
+        );
+      });
+      //comment the old code
+      /*.addCase(removeFav.fulfilled, (state, action) => {  
             state.list = state.list.filter(
                 (f) =>
                 !(
@@ -44,8 +69,8 @@ const slice = createSlice({
                     f.petId._id === action.payload.petId
                 )
             );
-    });
-  },
+      });*/
+    },
 });
 
 export default slice.reducer;

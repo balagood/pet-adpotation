@@ -4,6 +4,7 @@ import { applyPet } from "../slices/applicationSlice";
 import { useEffect, useState } from "react";
 import { getPetById } from "../api/petService";
 import { fetchReviews, createReview } from "../slices/reviewSlice";
+import { BASE_URL } from "../config";
 import toast from "react-hot-toast";
 
 
@@ -85,7 +86,7 @@ const handleReview = async () => {
   const handleApply = async () => {
   try {
         if(!user || !pet) return;
-        const res = dispatch(
+        const res = await dispatch(
         applyPet({
             petId: id,
             userId: user._id,
@@ -108,21 +109,15 @@ const handleReview = async () => {
   if (!pet) return <p className="p-4">Loading...</p>;
 
   return (
-    <div className="p-6 bg-white shadow rounded max-w-xl mx-auto">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-2">{pet.name}</h2>
-
-      {pet.photos && pet.photos.length > 0 && (
-        <img
-          src={`https://pet-adpotations.onrender.com${pet.photos[0]}`}
-          alt={pet.name}
-          className="w-full h-60 object-cover rounded mb-4"
-        />
-      )}
-
-      <p><strong>Breed:</strong> {pet.breed}</p>
-      <p><strong>Age:</strong> {pet.age}</p>
-      <p><strong>Size:</strong> {pet.size}</p>
-      <p><strong>Status:</strong> {pet.status}</p>
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        {pet.photos?.length > 0 ? (pet.photos.map((img, index) => (<img key={index} src={`${BASE_URL}/${img}`} className="h-40 w-full object-cover rounded"/>))) : (<img src="/no-image.png" className="h-40 w-full object-cover rounded" />)}
+      </div>
+      <p><strong>Breed:</strong> {pet.breed || "No Breed"}</p>
+      <p><strong>Age:</strong> {pet.age || "No Age"}</p>
+      <p><strong>Size:</strong> {pet.size || "No Size"}</p>
+      <p><strong>Status:</strong> {pet.status || "No status"}</p>
 
       <button
         onClick={handleApply} disabled={loading}
@@ -130,7 +125,7 @@ const handleReview = async () => {
       >
         {loading ? "Applying..":"Apply"}
       </button>
-      {/* ✅ REVIEW FORM */}
+     
       {user?.role === "adopter" && (
         <div className="mt-6">
           <h3 className="font-bold">Add Review</h3>
@@ -177,4 +172,12 @@ const handleReview = async () => {
 
     </div>
   );
+//comment the old code
+/*{pet.photos && pet.photos.length > 0 && (
+        <img
+          src={`https://pet-adpotations.onrender.com${pet.photos[0]}`}
+          alt={pet.name}
+          className="w-full h-60 object-cover rounded mb-4"
+        />
+)}*/
 }

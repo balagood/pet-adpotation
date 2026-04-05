@@ -1,5 +1,4 @@
 # Pet Adoption Platform
-
 Features
 User Authentication (Adopter, Shelter)
     Register & Login (Adopter / Shelter)
