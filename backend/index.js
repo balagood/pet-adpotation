@@ -13,6 +13,9 @@ import reviewRoutes from './routes/review.route.js'
 import swaggerUI from 'swagger-ui-express'
 import swaggerSpec from './config/swagger.js'
 import path from 'path'
+import { fileURLToPath } from "url";
+import fs from "fs";
+
 
 dotenv.config()
 
@@ -40,8 +43,17 @@ app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 
 
+
+app.get("/debug-uploads", (req, res) => {
+  const files = fs.readdirSync("uploads");
+  res.json(files);
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 //app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use("/uploads", express.static("uploads"));
+//app.use("/uploads", express.static("public/uploads"));
 app.listen(process.env.PORT, () => {
     console.log(`Server is listening to the port`)
 })

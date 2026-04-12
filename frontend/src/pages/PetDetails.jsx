@@ -7,177 +7,197 @@ import { fetchReviews, createReview } from "../slices/reviewSlice";
 import { BASE_URL } from "../config";
 import toast from "react-hot-toast";
 
-
 export default function PetDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const loading = useSelector((state) => state.applications.loading);
 
+  const loading = useSelector((state) => state.applications.loading);
   const reviews = useSelector((state) => state.reviews?.list || []);
+  const user = useSelector((state) => state.user.user);
+
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
-
-
   const [pet, setPet] = useState(null);
-  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     const fetchPet = async () => {
-      try {
-        const data = await getPetById(id);
-        setPet(data);
-      } catch (err) {
-        console.error(err);
-      }
+      const data = await getPetById(id);
+      setPet(data);
     };
     fetchPet();
   }, [id]);
 
   useEffect(() => {
-  if (id) {
-    dispatch(fetchReviews(id));
-  }
-}, [id,dispatch]);
+    if (id) dispatch(fetchReviews(id));
+  }, [id, dispatch]);
 
-const handleReview = async () => {
-  try {
-    if (!user || !user._id) {
-      toast.error("Please login first");
-      return;
-    }
+  const handleApply = async () => {
+    try {
+      if (!user || !pet) return;
 
-    if (!comment.trim()) {
-      toast.error("Comment required");
-      return;
+      await dispatch(
+        applyPet({
+          petId: id,
+          userId: user._id,
+          shelterId: pet.shelterId,
+          status:"submitted",
+        })
+      ).unwrap();
+
+      toast.success("Application submitted successfully");
+      navigate("/applications");
+
+    } catch {
+      toast.error("Error submitting application");
     }
+  };
+
+  const handleReview = async () => {
+    if (!user) return toast.error("Login first");
+    if (!comment.trim()) return toast.error("Comment required");
 
     await dispatch(
       createReview({
-        userId: user?._id,
+        userId: user._id,
         petId: id,
-        rating: Number(rating),
+        rating,
         comment,
       })
-    ).unwrap(); 
+    ).unwrap();
+
     toast.success("Review Added");
-
-    setComment(""); 
-
+    setComment("");
     dispatch(fetchReviews(id));
+  };
 
-  } catch (err) {
-    console.error(err);
-    toast.error("Error adding review");
-  }
-};
-
-  /*const handleApply = () => {
-    dispatch(
-      applyPet({
-        petId: id,
-        userId: "69ad2f4daf6855f9de25df86", // temp
-        shelterId: pet?.shelterId,
-        status: "submitted",
-      })
-    );
-  };*/ 
-
-  const handleApply = async () => {
-  try {
-        if(!user || !pet) return;
-        const res = await dispatch(
-        applyPet({
-            petId: id,
-            userId: user._id,
-            shelterId: pet.shelterId,
-            status:"submitted",
-            //userId: "69ad2f4daf6855f9de25df86",
-            //shelterId: "69ad867e7cb038246537335d",
-        })
-        ).unwrap(); 
-
-    toast.success("Application submitted successfully");
-
-    navigate("/applications");
-
-  } catch (err) {
-        console.error(err);
-        toast.error("Error submitting application");
-    }
-  }; 
-  if (!pet) return <p className="p-4">Loading...</p>;
+  if (!pet) return <p className="p-6">Loading...</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-2">{pet.name}</h2>
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        {pet.photos?.length > 0 ? (pet.photos.map((img, index) => (<img key={index} src={`${BASE_URL}${img}`} className="h-40 w-full object-cover rounded"/>))) : (<img src="/no-image.png" className="h-40 w-full object-cover rounded" />)}
-      </div>
-      <p><strong>Breed:</strong> {pet.breed || "No Breed"}</p>
-      <p><strong>Age:</strong> {pet.age || "No Age"}</p>
-      <p><strong>Size:</strong> {pet.size || "No Size"}</p>
-      <p><strong>Status:</strong> {pet.status || "No status"}</p>
+    <div className="max-w-6xl mx-auto p-6">
 
-      <button
-        onClick={handleApply} disabled={loading}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        {loading ? "Applying..":"Apply"}
-      </button>
-     
-      {user?.role === "adopter" && (
-        <div className="mt-6">
-          <h3 className="font-bold">Add Review</h3>
+      {/* Top Layout */}
+      <div className="grid md:grid-cols-2 gap-8">
 
-          <select
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            className="border p-2 mt-2"
-          >
-            {[1,2,3,4,5].map(n => (
-              <option key={n} value={n}>{n} Star</option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            value={comment}
-            placeholder="Write comment"
-            onChange={(e) => setComment(e.target.value)}
-            className="border p-2 w-full mt-2"
+        {/* Images */}
+        <div>
+          <img
+            src={pet?.photos?.[0]
+              ? `${BASE_URL}${pet.photos[0]}`
+              : "/no-image.png"}
+            className="w-full h-96 object-cover rounded-xl"
           />
 
+          <div className="grid grid-cols-4 gap-2 mt-2">
+            {pet.photos?.slice(1).map((img, i) => (
+              <img
+                key={i}
+                src={`${BASE_URL}${img}`}
+                className="h-20 w-full object-cover rounded"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Info */}
+        <div>
+          <h1 className="text-3xl font-bold">{pet.name}</h1>
+
+          <p className="text-gray-600 mt-1">{pet.breed}</p>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="bg-gray-100 p-3 rounded">
+              <p className="text-sm text-gray-500">Age</p>
+              <p className="font-semibold">{pet.age}</p>
+            </div>
+
+            <div className="bg-gray-100 p-3 rounded">
+              <p className="text-sm text-gray-500">Size</p>
+              <p className="font-semibold">{pet.size}</p>
+            </div>
+
+            <div className="bg-gray-100 p-3 rounded">
+              <p className="text-sm text-gray-500">Status</p>
+              <p className="font-semibold">{pet.status}</p>
+            </div>
+
+            <div className="bg-gray-100 p-3 rounded">
+              <p className="text-sm text-gray-500">Location</p>
+              <p className="font-semibold">{pet.location || "N/A"}</p>
+            </div>
+          </div>
+
           <button
-            onClick={handleReview}
-            className="bg-green-500 text-white px-3 py-2 mt-2 rounded"
+            onClick={handleApply}
+            disabled={loading}
+            className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
           >
-            Submit Review
+            {loading ? "Applying..." : "Adopt this Pet"}
           </button>
         </div>
+
+      </div>
+
+      {/* Description */}
+      {pet.description && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-2">About</h2>
+          <p className="text-gray-600">{pet.description}</p>
+        </div>
       )}
-      <div className="mt-6">
-        <h3 className="font-bold">Reviews</h3>
 
-        {reviews.length === 0 && <p>No reviews yet</p>}
+      {/* Add Review */}
+      {user?.role === "adopter" && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold">Add Review</h3>
 
-        {reviews.map((r) => (
-          <div key={r._id} className="border p-2 mt-2 rounded">
-            <p><b>{r.userId?.name}</b></p>
-            <p>⭐ {r.rating}</p>
-            <p>{r.comment}</p>
+          <div className="flex gap-2 mt-2">
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="border p-2 rounded"
+            >
+              {[1,2,3,4,5].map(n => (
+                <option key={n}>{n} Star</option>
+              ))}
+            </select>
+
+            <input
+              value={comment}
+              onChange={(e)=>setComment(e.target.value)}
+              placeholder="Write comment..."
+              className="border p-2 flex-1 rounded"
+            />
+
+            <button
+              onClick={handleReview}
+              className="bg-green-500 text-white px-4 rounded"
+            >
+              Submit
+            </button>
           </div>
-        ))}
+        </div>
+      )}
+
+      {/* Reviews */}
+      <div className="mt-8">
+        <h3 className="text-xl font-bold">Reviews</h3>
+
+        {reviews.length === 0 && (
+          <p className="text-gray-500 mt-2">No reviews yet</p>
+        )}
+
+        <div className="space-y-3 mt-3">
+          {reviews.map((r) => (
+            <div key={r._id} className="border p-3 rounded-lg">
+              <p className="font-semibold">{r.userId?.name}</p>
+              <p className="text-yellow-500">⭐ {r.rating}</p>
+              <p className="text-gray-600">{r.comment}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
     </div>
   );
-//comment the old code
-/*{pet.photos && pet.photos.length > 0 && (
-        <img
-          src={`https://pet-adpotations.onrender.com${pet.photos[0]}`}
-          alt={pet.name}
-          className="w-full h-60 object-cover rounded mb-4"
-        />
-)}*/
 }
