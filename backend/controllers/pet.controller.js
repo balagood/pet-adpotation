@@ -13,8 +13,9 @@ const upload = multer({ storage });
 export const addPet = async (req, res) => {
   try {
     const { shelterId, name, age, breed, size, color, medicalHistory, status } = req.body;
-    const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
+    const photoPaths = req.files ? req.files.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`): [];
     const pet = new Pet({
       shelterId,
       name,
@@ -94,8 +95,9 @@ export const getPetById = async (req, res) => {
 export const updatePet = async (req, res) => {
   try {
     const updates = req.body;
-    const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
+    const photoPaths = req.files ? req.files.map(file => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`): [];
     if (photoPaths.length > 0) {
       updates.photos = photoPaths;
     }
