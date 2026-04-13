@@ -82,9 +82,7 @@ export default function PetDetails() {
         {/* Images */}
         <div>
           <img
-            src={pet?.photos?.[0]
-              ? `${BASE_URL}${pet.photos[0]}`
-              : "/no-image.png"}
+            src={pet.photos?.[0] || "/no-image.png"}
             className="w-full h-96 object-cover rounded-xl"
           />
 

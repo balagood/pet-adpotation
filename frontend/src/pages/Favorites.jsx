@@ -61,11 +61,7 @@ export default function Favorites() {
                 onClick={() => navigate(`/pet/${pet._id}`)}
               >
                 <img
-                  src={
-                    pet?.photos?.[0]
-                      ? `${BASE_URL}${pet.photos[0]}`
-                      : "/no-image.png"
-                  }
+                  src={pet.photos?.[0] || "/no-image.png"}
                   alt={pet.name}
                   className="w-full h-52 object-cover"
                 />
