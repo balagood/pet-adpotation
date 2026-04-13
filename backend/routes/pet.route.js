@@ -1,6 +1,6 @@
 import {Router} from "express"
-import upload from "../middlewares/upload.js";
-import { addPet, getPets,getPetById, updatePet,deletePet} from "../controllers/pet.controller.js"
+//import upload from "../middlewares/upload.js";
+import { addPet, getPets,getPetById, updatePet,deletePet,upload} from "../controllers/pet.controller.js"
 import {authMiddleware} from "../middlewares/auth.js"
 
 const router = Router()

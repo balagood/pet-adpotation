@@ -1,7 +1,19 @@
 import Pet from "../models/Pet.js"
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
 
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "pets",
+    allowed_formats: ["jpg", "png", "jpeg"],
+  },
+});
+
+export const upload = multer({ storage });
 /* const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
@@ -13,7 +25,9 @@ const upload = multer({ storage });
 export const addPet = async (req, res) => {
   try {
     const { shelterId, name, age, breed, size, color, medicalHistory, status } = req.body;
-    const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+    //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
+    const photoPaths = req.files? req.files.map(file => file.path): [];
 
     const pet = new Pet({
       shelterId,
@@ -96,8 +110,12 @@ export const updatePet = async (req, res) => {
     const updates = req.body;
     const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    if (photoPaths.length > 0) {
+   /*  if (photoPaths.length > 0) {
       updates.photos = photoPaths;
+    } */
+
+    if (req.files && req.files.length > 0) {
+      updates.photos = req.files.map(file => file.path);
     }
 
     const pet = await Pet.findByIdAndUpdate(req.params.id, updates, { new: true }).select("-__v");

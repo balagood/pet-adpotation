@@ -18,14 +18,14 @@ const PetForm = () => {
     status: "available",
   });
 
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    setFiles(e.target.files);
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +35,7 @@ const PetForm = () => {
         ...formData,
         shelterId:user?._id,
       }
-      await addPet(data, file);
+      await addPet(data, files);
       toast.success("Pet added successfully!");
     } catch (err) {
       console.error(err);
@@ -139,7 +139,7 @@ const PetForm = () => {
         <div>
           <label className="block font-medium mb-1">Pet Image</label>
           <input
-            type="file"
+            type="file" multiple
             onChange={handleFileChange}
             className="border p-2 w-full rounded"
           />

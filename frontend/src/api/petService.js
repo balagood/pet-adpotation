@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API_URL = "https://pet-adpotations.onrender.com/pets"; // base URL for pets
-
-export const addPet = async (petData,file) => {
+//const API_URL = `${import.meta.env.VITE_API_BASE_URL}/pets`;
+export const addPet = async (petData,files) => {
   //const res = await axios.post(`${API_URL}/addPets`, petData);
   const data = new FormData();
   // append all pet fields
@@ -10,10 +10,16 @@ export const addPet = async (petData,file) => {
     data.append(key, petData[key]);
   });
   // append image file
-  if (file) {
-    data.append("image", file); // backend should expect "image"
-  }
+  // if (file) {
+  //   data.append("image", file); // backend should expect "image"
+  // }
 
+
+  if (files && files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      data.append("image", files[i]);
+    }
+  }
   const res = await axios.post(`${API_URL}/addPet`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
