@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addFav, removeFav} from "../slices/favoriteSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { BASE_URL } from "../config";
 
 const PetCard = ({ pet }) => {
@@ -26,6 +27,18 @@ const PetCard = ({ pet }) => {
   const handleEdit = () => {
     navigate(`/editPet/${pet._id}`);
   };
+
+   const handleViewDetails = () => {
+    // If not login -> go login page
+    if (!user) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
+
+    // If login -> open pet details page
+    navigate(`/pet/${pet._id}`);
+  };
   
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-4">
@@ -37,11 +50,45 @@ const PetCard = ({ pet }) => {
       <p>Age: {pet.age} years</p>
       <p>Size: {pet.size}</p>
       <p>Status: {pet.status}</p>
-      <div className="flex gap-2 mt-3">
-       {/*  <button onClick={handleEdit} className="px-3 py-1 bg-blue-500 text-white rounded">Edit</button> */}
-        <button onClick={() => navigate(`/pet/${pet._id}`)} className="px-3 py-1 bg-gray-500 text-white rounded">View Details</button>
+      {/*<div className="flex gap-2 mt-3">
+        <button onClick={handleEdit} className="px-3 py-1 bg-blue-500 text-white rounded">Edit</button> 
+        <button onClick={handleViewDetails => navigate(`/pet/${pet._id}`)} className="px-3 py-1 bg-gray-500 text-white rounded">View Details</button>
         {user?.role === "adopter" && (<button onClick={handleFavorite} className={`px-3 py-1 rounded text-white transition ml-2 ${isFav? "bg-red-500 hover:bg-red-600": "bg-green-500 hover:bg-green-600"}`}>{isFav ? "Saved" : "Save"}</button>)}
-      </div>
+      </div>*/}
+
+      <div className="flex flex-wrap gap-2 mt-4">
+
+          <button
+            onClick={handleViewDetails}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            View Details
+          </button>
+
+          {user?.role === "adopter" && (
+            <button
+              onClick={handleFavorite}
+              className={`px-4 py-2 rounded-lg text-white transition ${
+                isFav
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+            >
+              {isFav ? "Saved" : "Save"}
+            </button>
+          )}
+
+          {user?.role === "shelter" && (
+            <button
+              onClick={handleEdit}
+              className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition"
+            >
+              Edit
+            </button>
+          )}
+
+        </div>  
+
       
       {/* <button onClick={handleUpdate} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Mark as Adopted</button> */}
 

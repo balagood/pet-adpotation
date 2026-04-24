@@ -156,7 +156,7 @@ export default function PetDetails() {
               className="border p-2 rounded"
             >
               {[1,2,3,4,5].map(n => (
-                <option key={n}>{n} Star</option>
+                <option key={n} value={n}>{n} Star</option>
               ))}
             </select>
 
@@ -189,7 +189,7 @@ export default function PetDetails() {
           {reviews.map((r) => (
             <div key={r._id} className="border p-3 rounded-lg">
               <p className="font-semibold">{r.userId?.name}</p>
-              <p className="text-yellow-500">⭐ {r.rating}</p>
+              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
               <p className="text-gray-600">{r.comment}</p>
             </div>
           ))}

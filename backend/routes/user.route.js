@@ -1,5 +1,5 @@
 import {Router} from "express"
-import{registerUser,loginUser,refreshToken,updateUser,getUserProfile} from "../controllers/user.controller.js"
+import{registerUser,loginUser,refreshToken,updateUser,getUserProfile,forgotPassword,resetPassword} from "../controllers/user.controller.js"
 import {authMiddleware} from "../middlewares/auth.js"
 import {validateObjectId} from "../middlewares/validObjectIds.js"
 
@@ -134,6 +134,12 @@ router.get('/:id',authMiddleware,validateObjectId,getUserProfile);
  *         description: User profile retrieved
  */
 router.put('/:id',authMiddleware,updateUser);
+
+// Forgot Password
+router.post("/forgot-password",forgotPassword);
+
+// Reset Password
+router.post("/reset-password/:token",resetPassword);
 
 
 

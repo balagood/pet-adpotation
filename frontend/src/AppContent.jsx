@@ -1,4 +1,5 @@
 import { useLocation, Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -13,42 +14,106 @@ import PetDetails from "./pages/PetDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Favorites from "./pages/Favorites";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function AppContent() {
-    const location = useLocation();
+  const location = useLocation();
+  const user = useSelector((state) => state.user.user);
 
-    const hideNavbar =
-        location.pathname === "/" ||
-        location.pathname === "/login" ||
-        location.pathname === "/register";
+  // Hide navbar only login and register page
+  const hideNavbar =
+    location.pathname === "/login" ||
+    location.pathname === "/register";
 
-    return (
-        <div className="flex">
+  return (
+    <div className="flex">
 
-            {!hideNavbar && <Navbar />}
+      {!hideNavbar && <Navbar />}
 
-            <div className={`${!hideNavbar ? "ml-64" : ""} flex-1 flex flex-col min-h-screen`}>
+      <div
+        className={`${
+          !hideNavbar ? "ml-64" : ""
+        } flex-1 flex flex-col min-h-screen`}
+      >
+        <main className="flex-1 p-6">
+          <Routes>
 
-                <main className="flex-1 p-6">
-                    <Routes>
-                        <Route path="/" element={<Login />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/pets"element={<ProtectedRoute><Pets /></ProtectedRoute>}/>
-                        <Route path="/pet/:id" element={<ProtectedRoute><PetDetails /></ProtectedRoute>}/>
-                        <Route path="/add-pet" element={<ProtectedRoute role="shelter"><PetForm /></ProtectedRoute>}/>
-                        <Route path="/editPet/:id" element={<ProtectedRoute role="adopter"><EditPet /></ProtectedRoute>}/>
-                        <Route path="/applications/dashboard"element={<ProtectedRoute role="shelter"><ApplicationDashboard /></ProtectedRoute>}/>
-                        <Route path="/applications" element={<ProtectedRoute role="adopter"><MyApplications /></ProtectedRoute>}/>
-                        <Route path="/favorites" element={<ProtectedRoute role="adopter"><Favorites /></ProtectedRoute>}/>
-                    </Routes>
-                </main>
+            {/* Home page show all pets */}
+            <Route path="/" element={<Pets />} />
 
-                {!hideNavbar && <Footer />}
+            {/* Login */}
+            <Route path="/login" element={<Login />} />
 
-            </div>
-        </div>
-    );
+            {/* Register */}
+            <Route path="/register" element={<Register />} />
+
+            {/* Pets */}
+            <Route path="/pets" element={<Pets />} />
+
+            {/* Pet details */}
+            <Route path="/pet/:id" element={<PetDetails />} />
+
+            {/* Add pet */}
+            <Route
+              path="/add-pet"
+              element={
+                <ProtectedRoute role="shelter">
+                  <PetForm />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Edit pet */}
+            <Route
+              path="/editPet/:id"
+              element={
+                <ProtectedRoute role="shelter">
+                  <EditPet />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Shelter Dashboard */}
+            <Route
+              path="/applications/dashboard"
+              element={
+                <ProtectedRoute role="shelter">
+                  <ApplicationDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* My Applications */}
+            <Route
+              path="/applications"
+              element={
+                <ProtectedRoute role="adopter">
+                  <MyApplications />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Favorites */}
+            <Route
+              path="/favorites"
+              element={
+                <ProtectedRoute role="adopter">
+                  <Favorites />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+          </Routes>
+        </main>
+
+        {!hideNavbar && <Footer />}
+      </div>
+    </div>
+  );
 }
 
-export default AppContent;
+export default AppContent;233

@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const dispatch = useDispatch();
@@ -45,6 +46,15 @@ export default function Login() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className="border p-2 w-full"
         />
+
+        <div className="text-right mb-4">
+        <Link
+          to="/forgot-password"
+          className="text-blue-600 text-sm hover:underline"
+        >
+          Forgot Password?
+        </Link>
+      </div>
 
         <button className="bg-blue-500 text-white p-2 w-full">
           Login

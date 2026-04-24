@@ -40,9 +40,12 @@ const Pets = () => {
             className="border p-2 rounded"
             placeholder="Name"
             value={filters.name || ""}
-            onChange={(e) =>
-              setFilters({ ...filters, name: e.target.value })
-            }
+            onChange={(e) =>{
+              const value = e.target.value;
+              if (/^[A-Za-z ]*$/.test(value)){
+                setFilters({ ...filters, name: e.target.value })
+              }
+            }}
           />
 
           <input
@@ -50,18 +53,25 @@ const Pets = () => {
             type="number"
             placeholder="Age"
             value={filters.age || ""}
-            onChange={(e) =>
-              setFilters({ ...filters, age: e.target.value })
-            }
+            onChange={(e) =>{
+              const value = e.target.value;
+
+              if (/^[0-9]*$/.test(value)) {
+                setFilters({ ...filters, age: value });
+              }
+          }}
           />
 
           <input
             className="border p-2 rounded"
             placeholder="Color"
             value={filters.color || ""}
-            onChange={(e) =>
-              setFilters({ ...filters, color: e.target.value })
-            }
+            onChange={(e) =>{
+              const value = e.target.value;
+              if (/^[A-Za-z ]*$/.test(value)){
+                setFilters({ ...filters, color: e.target.value })
+              }
+            }}
           />
 
           <select

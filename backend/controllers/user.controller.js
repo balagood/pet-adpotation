@@ -2,7 +2,8 @@ import bcrypt from 'bcryptjs';
 import User from "../models/User.js"
 import jwt from "jsonwebtoken";
 import {generateAccessToken,generateRefreshToken } from "../helpers/tokenHelper.js"
-import {sendMail} from "../helpers/mailHelper.js"
+//import {sendMail} from "../helpers/mailHelper.js"
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -88,5 +89,77 @@ export const refreshToken = (req, res) => {
   }
 };
 
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const resetLink =
+      `http://localhost:5173/reset-password/${token}`;
+
+    await sendEmail(
+      email,
+      "Reset Password",
+      `
+      <h2>Hello ${user.name}</h2>
+      <p>Click below link to reset password:</p>
+      <a href="${resetLink}">${resetLink}</a>
+      `
+    );
+
+    res.status(200).json({
+      message: "Reset link sent to email",
+    });
+
+  } catch (error) {
+    console.log(
+    "Forgot Password Error:",
+    error.response?.body || error.message || error
+  );
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    const decoded = jwt.verify(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(decoded.id, {
+      passwordHash: hashedPassword,
+    });
+
+    res.status(200).json({
+      message: "Password updated successfully",
+    });
+
+  } catch (error) {
+    res.status(400).json({
+      message: "Invalid or expired token",
+    });
+  }
+};
 
 

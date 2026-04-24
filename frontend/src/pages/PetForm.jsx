@@ -30,6 +30,49 @@ const PetForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+      // Name validation
+    if (!/^[A-Za-z ]+$/.test(formData.name)) {
+      toast.error("Name should contain only letters");
+      return;
+    }
+
+    // Age validation
+    if (!/^[0-9]+$/.test(formData.age)) {
+      toast.error("Age should contain only numbers");
+      return;
+    }
+
+
+    // Breed validation
+    if (!/^[A-Za-z ]+$/.test(formData.breed)) {
+      toast.error("Breed should contain only letters");
+      return;
+    }
+
+    // Size validation
+    if (!/^(Small|Medium|Large)$/i.test(formData.size)) {
+      toast.error("Size should be Small / Medium / Large");
+      return;
+    }
+
+    // Color validation
+    if (!/^[A-Za-z ]+$/.test(formData.color)) {
+      toast.error("Color should contain only letters");
+      return;
+    }
+
+    // Medical History validation
+    if (formData.medicalHistory.trim() === "") {
+      toast.error("Medical history is required");
+      return;
+    }
+
+    // File validation
+    if (files.length === 0) {
+      toast.error("Please upload image");
+      return;
+    }
     try {
       const data ={
         ...formData,
@@ -37,6 +80,18 @@ const PetForm = () => {
       }
       await addPet(data, files);
       toast.success("Pet added successfully!");
+
+      setFormData({
+        name: "",
+        age: "",
+        breed: "",
+        size: "",
+        color: "",
+        medicalHistory: "",
+        status: "available",
+      });
+
+      setFiles([]);
     } catch (err) {
       console.error(err);
       toast.error("Error adding pet");
@@ -44,10 +99,10 @@ const PetForm = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div className="w-full max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-6 text-center">Add New Pet</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-y-4">
 
         {/* Name */}
         <div>
@@ -146,12 +201,12 @@ const PetForm = () => {
         </div>
 
         {/* Submit */}
-        <button
-          type="submit" disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          {loading?"Adding":"Add Pet"}
-        </button>
+        <div className="col-span-1 md:col-span-2 lg:col-span-3 flex justify-end">
+            <button type="submit" disabled={loading} className=" bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+              {loading?"Adding":"Add Pet"}
+            </button>
+        </div>
+        
 
       </form>
     </div>
