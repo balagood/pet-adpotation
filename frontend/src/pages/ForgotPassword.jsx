@@ -10,7 +10,7 @@ const ForgotPassword = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/users/forgot-password",
+        "https://pet-adpotations.onrender.com/users/forgot-password",
         { email }
       );
 

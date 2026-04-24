@@ -14,7 +14,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/users/reset-password/${token}`,
+        `https://pet-adpotations.onrender.com/users/reset-password/${token}`,
         { password }
       );
 
