@@ -25,7 +25,7 @@ const Pets = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Available Pets</h2>
+        <h2 className="text-2xl font-bold">Find Your Perfect Companion</h2>
         <span className="text-gray-500">
           {list.length} pets found
         </span>
@@ -82,9 +82,9 @@ const Pets = () => {
             }
           >
             <option value="">All Sizes</option>
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
           </select>
 
           <button
@@ -102,6 +102,9 @@ const Pets = () => {
           <p className="text-gray-500 text-lg">
             No pets found
           </p>
+           <p className="text-gray-400 mt-2">
+    Try changing filters
+  </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

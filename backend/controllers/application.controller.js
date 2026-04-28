@@ -49,6 +49,25 @@ export const updateApplicationStatus = async (req, res) => {
       { new: true }
     );
     if (!application) return res.status(404).json({ message: "Application not found" });
+      // If approved -> pet becomes adopted
+    if (status === "approved") {
+      await Pet.findByIdAndUpdate(
+        application.petId,
+        { status: "adopted" }
+      );
+
+      // Reject all other pending requests
+      await Application.updateMany(
+        {
+          petId: application.petId,
+          _id: { $ne: application._id },
+          status: "pending"
+        },
+        {
+          status: "rejected"
+        }
+      );
+    }
     res.json(application);
   } catch (err) {
     res.status(500).json({ message: err.message });

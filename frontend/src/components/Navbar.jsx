@@ -54,13 +54,32 @@ const Navbar = () => {
                     </li>
                   )}
 
+                   {user?.role === "shelter" && (
+                    <li>
+                      <Link to="/pets" className="block px-3 py-2 bg-gray-800 rounded text-blue-300">
+                        View Pets
+                      </Link>
+                    </li>
+                  )}
+
                   {user?.role === "shelter" && (
                     <li>
                       <Link to="/add-pet" className="block px-3 py-2 bg-gray-800 rounded text-blue-300">
                         Add Pet
                       </Link>
                     </li>
+
+                          
                   )}
+
+                  {user?.role === "shelter" && (
+                    <li>
+                    <Link  to="/shelter-dashboard" className="block px-3 py-2 bg-gray-800 rounded text-yellow-300">
+                      Manage Pets
+                    </Link>
+                  </li>
+                  )}
+                  
 
                 </ul>
               )}
@@ -102,7 +121,7 @@ const Navbar = () => {
                   {user.role === "shelter" && (
                     <li>
                       <Link to="/applications/dashboard" className="block px-3 py-2 bg-gray-800 rounded text-green-300">
-                        Dashboard
+                        Adoption Requests
                       </Link>
                     </li>
                   )}

@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Pets from "./pages/Pets";
 import PetForm from "./pages/PetForm";
 import EditPet from "./pages/EditPet";
+import ShelterDashboard from "./pages/ShelterDashboard";
 import MyApplications from "./pages/MyApplication";
 import ApplicationDashboard from "./pages/ApplicationDashboard";
 import PetDetails from "./pages/PetDetails";
@@ -54,6 +55,15 @@ function AppContent() {
             {/* Pet details */}
             <Route path="/pet/:id" element={<PetDetails />} />
 
+            <Route
+              path="/shelter-dashboard"
+              element={
+                      <ProtectedRoute role="shelter">
+                      <ShelterDashboard />
+                      </ProtectedRoute>
+              }
+            />
+
             {/* Add pet */}
             <Route
               path="/add-pet"
@@ -69,7 +79,7 @@ function AppContent() {
               path="/editPet/:id"
               element={
                 <ProtectedRoute role="shelter">
-                  <EditPet />
+                  <PetForm />
                 </ProtectedRoute>
               }
             />

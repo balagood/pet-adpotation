@@ -21,10 +21,20 @@ export const upload = multer({ storage });
 const upload = multer({ storage });
  */
 
+export const getMyPets = async (req, res) => {
+  try {
+    const pets = await Pet.find({ shelterId: req.user.id }).sort({ createdAt: -1 });
+
+    res.json(pets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const addPet = async (req, res) => {
   try {
-    const { shelterId, name, age, breed, size, color, medicalHistory, status } = req.body;
+    const shelterId = req.user.id;
+    const {name, age, breed, size, color, medicalHistory, status } = req.body;
     //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const photoPaths = req.files? req.files.map(file => file.path): [];
@@ -51,17 +61,8 @@ export const addPet = async (req, res) => {
 
 export const getPets = async (req, res) => {
   try {
-    const filters = {};
-   /*  if (req.query.species) filters.species = req.query.species;
-    if (req.query.breed) filters.breed = req.query.breed;
-    if (req.query.age) filters.age = req.query.age;
-    if (req.query.size) filters.size = req.query.size;
-    if (req.query.color) filters.color = req.query.color;
-    if (req.query.status) filters.status = req.query.status;
-    if (req.query.location) filters.location = req.query.location;
-    if (req.query.location) filters.name = { $regex: req.query.name, $options: "i" }; ;*/
-    
-     if (req.query.species && req.query.species.trim() !== "") {
+    const filters = { status: "available"};
+    if (req.query.species && req.query.species.trim() !== "") {
       filters.species = req.query.species;
     }
     if (req.query.breed && req.query.breed.trim() !== "") {
@@ -76,9 +77,6 @@ export const getPets = async (req, res) => {
     if (req.query.color && req.query.color.trim() !== "") {
       filters.color = req.query.color;
     }
-    if (req.query.status && req.query.status.trim() !== "") {
-      filters.status = req.query.status;
-    }
     if (req.query.location && req.query.location.trim() !== "") {
       filters.location = req.query.location;
     }
@@ -86,6 +84,7 @@ export const getPets = async (req, res) => {
       filters.name = { $regex: req.query.name, $options: "i" }; // case-insensitive partial match
     }
 
+    
     const pets = await Pet.find(filters).select("-__v");
     res.json(pets);
   } catch (err) {
@@ -118,7 +117,8 @@ export const updatePet = async (req, res) => {
       updates.photos = req.files.map(file => file.path);
     }
 
-    const pet = await Pet.findByIdAndUpdate(req.params.id, updates, { new: true }).select("-__v");
+    //const pet = await Pet.findByIdAndUpdate(req.params.id, updates, { new: true }).select("-__v");
+    const pet = await Pet.findOneAndUpdate({ _id:req.params.id, shelterId:req.user.id },updates,{ new:true });
     if (!pet) return res.status(404).json({ message: "Pet not found" });
     res.json(pet);
   } catch (err) {
@@ -129,7 +129,8 @@ export const updatePet = async (req, res) => {
 
 export const deletePet = async (req, res) => {
   try {
-    const pet = await Pet.findByIdAndDelete(req.params.id);
+    //const pet = await Pet.findByIdAndDelete(req.params.id);
+    const pet = await Pet.findOneAndDelete({_id:req.params.id,shelterId:req.user.id});
     if (!pet) return res.status(404).json({ message: "Pet not found" });
     res.json({ message: "Pet deleted successfully" });
   } catch (err) {

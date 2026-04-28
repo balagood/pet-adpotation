@@ -14,5 +14,14 @@ export const authMiddleware = (req, res, next) => {
 };
 
 
+export const shelterMiddleware = (req, res, next) => {
+  if (req.user.role !== "shelter") {
+    return res.status(403).json({
+      message: "Access denied. Shelter only"
+    });
+  }
+
+  next();
+};
 
 export default authMiddleware;
