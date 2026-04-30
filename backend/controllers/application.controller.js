@@ -1,12 +1,28 @@
 import Application from "../models/Application.js"
+import Pet from "../models/Pet.js";
+
+
+
+
 
 
 export const submitApplication = async (req, res) => {
   try {
-    const { petId, shelterId,userId,status } = req.body;
-    //const userId = req.user._id; // from authMiddleware
+    const { petId, shelterId,status } = req.body;
+    const userId = req.user._id; // from authMiddleware
 
-    const application = new Application({ userId, petId, shelterId, status });
+    //const application = new Application({ userId, petId, shelterId, status });
+    const existing = await Application.findOne({userId,petId,status: { $in: ["submitted", "approved"] }});
+
+    if (existing) {
+      return res.status(400).json({ message: "You already applied for this pet" });
+    }
+
+    const application = new Application({
+      userId,
+      petId,
+      shelterId
+    });
     await application.save();
 
     res.status(201).json({ message: "Application submitted successfully", application });
@@ -43,6 +59,12 @@ export const getApplicationsByShelter = async (req, res) => {
 export const updateApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body;
+
+    const allowedStatus = ["reviewed", "approved", "rejected"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
     const application = await Application.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -61,7 +83,7 @@ export const updateApplicationStatus = async (req, res) => {
         {
           petId: application.petId,
           _id: { $ne: application._id },
-          status: "pending"
+          status: "submitted"
         },
         {
           status: "rejected"

@@ -52,8 +52,7 @@ export default function ApplicationDashboard() {
         <h3 className="text-2xl font-bold text-yellow-500">
           {apps.filter(
             (a) =>
-              a.status === "submitted" ||
-              a.status === "pending"
+              a.status === "submitted" 
           ).length}
         </h3>
       </div>
@@ -98,8 +97,7 @@ export default function ApplicationDashboard() {
             </span>
           </p>
 
-          {(app.status === "submitted" ||
-            app.status === "pending") && (
+          {(app.status === "submitted") && (
             <div className="flex gap-2 mt-4">
               <button
                 onClick={() =>

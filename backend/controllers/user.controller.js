@@ -82,7 +82,7 @@ export const refreshToken = (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const newAccessToken = generateAccessToken({ _id: decoded.id, role: decoded.role });
+    const newAccessToken = generateAccessToken({ _id: decoded._id, role: decoded.role });
     res.json({ accessToken: newAccessToken });
   } catch (err) {
     res.status(403).json({ message: 'Invalid refresh token' });
