@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children, role }) {
 
   // ✅ Role check (safe)
   if (role && user?.role !== role) {
-    return <Navigate to="/pets" />;
+    return <Navigate to="/pets" replace />;
   }
 
   return children;

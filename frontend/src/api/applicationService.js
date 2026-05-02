@@ -21,7 +21,16 @@ api.interceptors.request.use((config) => {
 
 // ✅ Apply
 export const applyForPet = async (data) => {
-  const res = await api.post(`/submitApplication`, data);
+  const payload = {
+    petId: data.petId,
+    adopterId: data.adopterId,
+    adopterName: data.adopterName,
+    adopterEmail: data.adopterEmail,
+    shelterId: data.shelterId,
+    shelterEmail: data.shelterEmail,
+    message: data.message || "",
+  };
+  const res = await api.post(`/submitApplication`, payload);
   return res.data;
 };
 
