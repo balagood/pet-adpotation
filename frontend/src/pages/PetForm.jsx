@@ -83,6 +83,11 @@ const PetForm = () => {
       return false;
     }
 
+    if (formData.age < 0 || !formData.age > 25) {
+    toast.error("Age must be between 0 and 25");
+    return false;
+    }
+
     if (
       !/^[A-Za-z ]+$/.test(formData.breed)
     ) {
@@ -133,7 +138,12 @@ const PetForm = () => {
 
       navigate("/shelter-dashboard");
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(
+    error?.response?.data?.message ||
+    error?.message ||
+    "Something went wrong"
+  );
+      //toast.error("Something went wrong");
     }
   };
 
@@ -220,12 +230,12 @@ const PetForm = () => {
           <option value="available">
             Available
           </option>
-          <option value="adopted">
+          {/* <option value="adopted">
             Adopted
           </option>
           <option value="fostered">
             Fostered
-          </option>
+          </option> */}
         </select>
 
         <input

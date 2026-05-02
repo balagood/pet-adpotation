@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate  } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/userSlice";
 
@@ -7,15 +7,30 @@ const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(null);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login"); // ✅ FIXED (no page reload)
+  };
+
   return (
     <aside className="w-64 h-screen bg-gray-900 text-gray-100 flex flex-col p-4 fixed left-0 top-0 overflow-y-auto">
       <h2 className="text-xl font-bold mb-6">Pet Adoption Platform</h2>
+
+      <nav className="mb-4">
+        <Link
+          to="/pets"
+          className="block px-3 py-2 rounded bg-gray-800 hover:bg-gray-700"
+        >
+          Home
+        </Link>
+      </nav>
 
       {/* ✅ LOGOUT */}
       {user && (

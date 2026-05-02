@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const petSchema = new mongoose.Schema({
   shelterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Shelter', required: true },
   name: { type: String, required: true },
-  age: Number,
+  age: {type:Number,required:true,min:0,max:25},
   breed: String,
   size: String,
   color: String,

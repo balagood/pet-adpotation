@@ -18,9 +18,12 @@ export default function Login() {
     e.preventDefault();
     try{
       const res = await dispatch(login(form)).unwrap();
-      if (res.user.role === "shelter") {
+      const role = res?.user?.role;
+      if (role === "shelter") {
         navigate("/applications/dashboard");
-      } else {
+      }else if (role === "adopter") {
+        navigate("/pets");
+      }else {
         navigate("/pets");
       }
     }catch(err){
@@ -35,12 +38,14 @@ export default function Login() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
+          value={form.email}
           placeholder="Email"
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className="border p-2 w-full"
         />
 
         <input
+          value={form.password}
           type="password"
           placeholder="Password"
           onChange={(e) => setForm({ ...form, password: e.target.value })}

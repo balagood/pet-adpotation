@@ -35,6 +35,14 @@ export const addPet = async (req, res) => {
   try {
     const shelterId = req.user.id;
     const {name, age, breed, size, color, medicalHistory, status } = req.body;
+
+    if (!name || !breed || !size || !color) {
+      return res.status(400).json({ message: "Required fields missing" });
+    }
+
+    if (age < 0 || age > 25) {
+      return res.status(400).json({ message: "Invalid age value" });
+    }
     //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const photoPaths = req.files? req.files.map(file => file.path): [];
@@ -112,6 +120,14 @@ export const updatePet = async (req, res) => {
    /*  if (photoPaths.length > 0) {
       updates.photos = photoPaths;
     } */
+
+    if (updates.age && (updates.age < 0 || updates.age > 25)) {
+      return res.status(400).json({ message: "Invalid age value" });
+    }
+
+    if (updates.size && !["Small", "Medium", "Large"].includes(updates.size)) {
+      return res.status(400).json({ message: "Invalid size value" });
+    }
 
     if (req.files && req.files.length > 0) {
       updates.photos = req.files.map(file => file.path);

@@ -1,4 +1,4 @@
-import { useLocation, Routes, Route } from "react-router-dom";
+import { useLocation, Routes, Route,Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -23,9 +23,10 @@ function AppContent() {
   const user = useSelector((state) => state.user.user);
 
   // Hide navbar only login and register page
-  const hideNavbar =
-    location.pathname === "/login" ||
-    location.pathname === "/register";
+  // const hideNavbar =
+  //   location.pathname === "/login" ||
+  //   location.pathname === "/register";
+  const hideNavbar = ["/login", "/register", "/forgot-password", "/reset-password"].includes(location.pathname);
 
   return (
     <div className="flex">
@@ -39,15 +40,22 @@ function AppContent() {
       >
         <main className="flex-1 p-6">
           <Routes>
+            {/* Login */}
+            {/*  <Route path="/login" element={<Login />} /> */}
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/pets" /> : <Login />}
+            />
+
+            {/* Register */}
+            {/*  <Route path="/register" element={<Register />} /> */}
+            <Route
+              path="/register"
+              element={user ? <Navigate to="/pets" /> : <Register />}
+            />
 
             {/* Home page show all pets */}
             <Route path="/" element={<Pets />} />
-
-            {/* Login */}
-            <Route path="/login" element={<Login />} />
-
-            {/* Register */}
-            <Route path="/register" element={<Register />} />
 
             {/* Pets */}
             <Route path="/pets" element={<Pets />} />
@@ -117,6 +125,8 @@ function AppContent() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
 
+            <Route path="*" element={<Navigate to="/" />} />
+
           </Routes>
         </main>
 
@@ -126,4 +136,4 @@ function AppContent() {
   );
 }
 
-export default AppContent;233
+export default AppContent;

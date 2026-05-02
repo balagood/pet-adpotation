@@ -6,7 +6,11 @@ export default function ProtectedRoute({ children, role }) {
 
   // ✅ Check token
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace/>;
+  }
+
+  if (!user) {
+    return <div className="p-6">Loading...</div>;
   }
 
   // ✅ Role check (safe)

@@ -4,6 +4,7 @@ import { applyPet } from "../slices/applicationSlice";
 import { useEffect, useState } from "react";
 import { getPetById } from "../api/petService";
 import { fetchReviews, createReview } from "../slices/reviewSlice";
+import { fetchUserApplications } from "../slices/applicationSlice";
 import { BASE_URL } from "../config";
 import toast from "react-hot-toast";
 
@@ -16,6 +17,8 @@ export default function PetDetails() {
   const reviews = useSelector((state) => state.reviews?.list || []);
   const user = useSelector((state) => state.user.user);
 
+  //const applications = useSelector((state) => state.applications.list);
+  const applications = useSelector((state) => state.applications.list || []);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [pet, setPet] = useState(null);
@@ -32,6 +35,12 @@ export default function PetDetails() {
     if (id) dispatch(fetchReviews(id));
   }, [id, dispatch]);
 
+  useEffect(() => {
+  if (user?._id) {
+    dispatch(fetchUserApplications(user._id));
+  }
+}, [dispatch, user]);
+
   const handleApply = async () => {
     try {
       if (!user || !pet) return;
@@ -39,12 +48,14 @@ export default function PetDetails() {
       await dispatch(
         applyPet({
           petId: id,
-          userId: user._id,
-          shelterId: pet.shelterId,
-          status:"submitted",
+          //userId: user._id,
+          //shelterId: pet.shelterId,
+          shelterId: pet.shelterId?._id || pet.shelterId,
+          //status:"submitted",
         })
       ).unwrap();
 
+      await dispatch(fetchUserApplications(user._id));
       toast.success("Application submitted successfully");
       navigate("/applications");
 
@@ -71,13 +82,23 @@ export default function PetDetails() {
     dispatch(fetchReviews(id));
   };
 
+  //const existingApplication = applications.find((app) =>(app.petId?._id || app.petId) === id);
+  const existingApplication = applications.find((app) => String(app.petId?._id || app.petId) === String(id)); 
   if (!pet) return <p className="p-6">Loading...</p>;
 
   return (
     <div className="max-w-6xl mx-auto p-6">
 
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+      >
+        ← Back
+      </button>
+
       {/* Top Layout */}
       <div className="grid md:grid-cols-2 gap-8">
+        
 
         {/* Images */}
         <div>
@@ -124,14 +145,14 @@ export default function PetDetails() {
               <p className="font-semibold">{pet.location || "N/A"}</p>
             </div>
           </div>
-
+          {pet.status === "available" && user?.role === "adopter" && (
           <button
             onClick={handleApply}
-            disabled={loading}
-            className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-          >
-            {loading ? "Applying..." : "Adopt this Pet"}
-          </button>
+            disabled={loading || existingApplication}
+           className={`w-full mt-6 py-3 rounded-lg text-white ${existingApplication? "bg-gray-400 cursor-not-allowed": loading? "bg-gray-400": "bg-blue-600 hover:bg-blue-700"}`}>
+           {existingApplication? "Already Applied": loading? "Applying...": "Adopt this Pet"}
+          </button> 
+          )}
         </div>
 
       </div>

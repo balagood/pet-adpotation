@@ -5,29 +5,34 @@ import toast from "react-hot-toast";
 
 export default function ApplicationDashboard() {
   const dispatch = useDispatch();
-  const apps = useSelector((state) => state.applications.list);
+  //const apps = useSelector((state) => state.applications.list);
+  const apps = useSelector((state) => state.applications.list || []);
   const user = useSelector((state) => state.user.user);
   const loading = useSelector((state) => state.applications.loading);
   //const shelterId = "69ad867e7cb038246537335d"; 
   //const shelterId = "69ad867e7cb038246537335d"; 
   useEffect(() => {
-    if(user?._id){
-      console.log("Fetching for shelter",user._id);
-      dispatch(fetchShelterApplications(user._id));
+    if(user){
+      //console.log("Fetching for shelter",user._id);
+      dispatch(fetchShelterApplications(user));
     }
-  }, [dispatch,user]);
+  }, [dispatch,user?.role]);
 
   const handleUpdate = async (id, status) => {
     try {
-      console.log("Updating:", id, status);
+      //console.log("Updating:", id, status);
 
+      const app = apps.find(a => a._id === id);
+
+      if (app?.petId?.status === "adopted") {
+        toast.error("Pet already adopted");
+        return;
+      }
       await dispatch(updateApplication({ id, status })).unwrap();
-
       toast.success(`Status changed to ${status}`);
-
       dispatch(fetchShelterApplications(user._id));
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       toast.error("Update failed");
     }
   };
@@ -37,6 +42,9 @@ export default function ApplicationDashboard() {
     <h2 className="text-3xl font-bold mb-6">
       Application Dashboard
     </h2>
+    {loading && (
+      <p className="text-gray-500 mb-4">Loading applications...</p>
+    )}
 
     {/* Summary Cards */}
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -87,40 +95,38 @@ export default function ApplicationDashboard() {
             {app.petId?.name}
           </h3>
 
+          <p className="text-sm text-gray-500">
+            Pet Status: {app.petId?.status}
+          </p>
           <p>User: {app.userId?.name}</p>
           <p>{app.userId?.email}</p>
 
           <p className="mt-2">
             Status:
-            <span className="ml-2 font-semibold">
+            <span className={`ml-2 px-2 py-1 rounded text-white text-sm ${app.status === "approved"? "bg-green-500": app.status === "rejected"? "bg-red-500": "bg-yellow-500"}`}>
               {app.status}
             </span>
+           {/*  <span className="ml-2 font-semibold">
+              {app.status}
+            </span> */}
           </p>
 
-          {(app.status === "submitted") && (
+          {(app.status === "submitted" && app.petId?.status !== "adopted") && (
             <div className="flex gap-2 mt-4">
               <button
-                onClick={() =>
-                  handleUpdate(
-                    app._id,
-                    "approved"
-                  )
-                }
-                className="flex-1 bg-green-500 text-white py-2 rounded"
+                disabled={loading}
+                onClick={() =>handleUpdate(app._id,"approved")}
+                className="flex-1 bg-green-500 text-white py-2 rounded disabled:bg-gray-400"
               >
-                Approve
+                {loading ? "Processing..." : "Approve"}
               </button>
 
               <button
-                onClick={() =>
-                  handleUpdate(
-                    app._id,
-                    "rejected"
-                  )
-                }
-                className="flex-1 bg-red-500 text-white py-2 rounded"
+                disabled={loading}
+                onClick={() =>handleUpdate(app._id,"rejected")}
+                className="flex-1 bg-red-500 text-white py-2 rounded disabled:bg-gray-400"
               >
-                Reject
+                {loading ? "Processing..." : "Reject"}
               </button>
             </div>
           )}

@@ -5,8 +5,8 @@ import {authMiddleware,shelterMiddleware} from "../middlewares/auth.js"
 const router = Router();
 
 router.post("/submitApplication",authMiddleware,submitApplication);
-router.get("/user/:userId", authMiddleware,getApplicationsByUser);
-router.get("/shelter/:shelterId",authMiddleware, getApplicationsByShelter);
+router.get("/user", authMiddleware,getApplicationsByUser);
+router.get("/shelter",authMiddleware,shelterMiddleware, getApplicationsByShelter);
 router.put("/:id", authMiddleware,shelterMiddleware,updateApplicationStatus);
 router.delete("/:id", authMiddleware, deleteApplication);
 

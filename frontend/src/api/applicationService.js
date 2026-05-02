@@ -1,6 +1,9 @@
 import axios from "axios";
+import { BASE_URL } from "../config";
 
-const API_URL = "https://pet-adpotations.onrender.com/application";
+//const API_URL = "https://pet-adpotations.onrender.com/application";
+const API_URL = `${BASE_URL}/application`;
+
 
 const api = axios.create({
   baseURL: API_URL,
@@ -18,30 +21,30 @@ api.interceptors.request.use((config) => {
 
 // ✅ Apply
 export const applyForPet = async (data) => {
-  const res = await api.post(`${API_URL}/submitApplication`, data);
+  const res = await api.post(`/submitApplication`, data);
   return res.data;
 };
 
 // ✅ Get applications by user
-export const getApplicationsByUser = async (userId) => {
-  const res = await api.get(`${API_URL}/user/${userId}`);
+export const getApplicationsByUser = async () => {
+  const res = await api.get(`/user`);
   return res.data;
 };
 
 // ✅ Get applications by shelter
-export const getApplicationsByShelter = async (shelterId) => {
-  const res = await api.get(`${API_URL}/shelter/${shelterId}`);
+export const getApplicationsByShelter = async () => {
+  const res = await api.get(`/shelter`);
   return res.data;
 };
 
 // ✅ Update status
 export const updateApplicationStatus = async (id, status) => {
-  const res = await api.put(`${API_URL}/${id}`, { status });
+  const res = await api.put(`/${id}`, { status });
   return res.data;
 };
 
 // ✅ Delete
 export const deleteApplication = async (id) => {
-  const res = await api.delete(`${API_URL}/${id}`);
+  const res = await api.delete(`/${id}`);
   return res.data;
 };

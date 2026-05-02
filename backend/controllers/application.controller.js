@@ -1,21 +1,48 @@
 import Application from "../models/Application.js"
 import Pet from "../models/Pet.js";
 
-
-
-
-
-
 export const submitApplication = async (req, res) => {
   try {
+
+    if (req.user.role !== "adopter") {
+      return res.status(403).json({
+        message: "Only adopters can apply for pets"
+      });
+    }
     const { petId, shelterId,status } = req.body;
-    const userId = req.user._id; // from authMiddleware
+    const userId = req.user.id; // from authMiddleware
+
+    const pet = await Pet.findById(petId);
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet not found" });
+    }
+
+    if (pet.status !== "available") {
+      return res.status(400).json({
+        message: "This pet is not available for adoption"
+      });
+    }
+
+    // if (pet.status === "adopted") {
+    //   return res.status(400).json({
+    //     message: "This pet is already adopted"
+    //   });
+    // }
 
     //const application = new Application({ userId, petId, shelterId, status });
-    const existing = await Application.findOne({userId,petId,status: { $in: ["submitted", "approved"] }});
+    //const existing = await Application.findOne({userId,petId,status: { $in: ["submitted", "approved","reviewed"] }});
 
-    if (existing) {
-      return res.status(400).json({ message: "You already applied for this pet" });
+    // if (existing) {
+    //   return res.status(400).json({ message: "You already applied for this pet" });
+    // }
+
+    const existing = await Application.findOne({ userId, petId });
+
+    if (existing && existing.status !== "rejected") {
+      return res.status(400).json({
+        message: "You already applied for this pet"
+      });
     }
 
     const application = new Application({
@@ -34,7 +61,7 @@ export const submitApplication = async (req, res) => {
 
 export const getApplicationsByUser = async (req, res) => {
   try {
-    const applications = await Application.find({ userId: req.params.userId })
+    const applications = await Application.find({ userId: req.user.id || req.user._id })
       .populate("petId", "name breed")
       .populate("shelterId", "name location");
     res.json(applications);
@@ -46,7 +73,7 @@ export const getApplicationsByUser = async (req, res) => {
 
 export const getApplicationsByShelter = async (req, res) => {
   try {
-    const applications = await Application.find({ shelterId: req.params.shelterId })
+    const applications = await Application.find({ shelterId: req.user.id || req.user._id})
       .populate("userId", "name email")
       .populate("petId", "name breed");
     res.json(applications);
