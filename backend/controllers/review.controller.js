@@ -4,7 +4,7 @@ import Application from "../models/Application.js";
 export const addReview = async(req,res)=>{
     try {
       const { petId, shelterId, rating, comment } = req.body;
-      const userId = req.user._id; // from authMiddleware
+      const userId = req.user.id; // from authMiddleware
 
       const application = await Application.findOne({
         userId,
