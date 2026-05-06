@@ -72,6 +72,7 @@ export default function PetDetails() {
       createReview({
         userId: user._id,
         petId: id,
+        shelterId: pet.shelterId?._id || pet.shelterId,
         rating,
         comment,
       })
