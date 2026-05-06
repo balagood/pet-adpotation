@@ -69,7 +69,7 @@ export const addPet = async (req, res) => {
 
 export const getPets = async (req, res) => {
   try {
-    const filters = { status: "available"};
+    const filters = {};
     if (req.query.species && req.query.species.trim() !== "") {
       filters.species = req.query.species;
     }
@@ -90,6 +90,10 @@ export const getPets = async (req, res) => {
     }
     if (req.query.name && req.query.name.trim() !== "") {
       filters.name = { $regex: req.query.name, $options: "i" }; // case-insensitive partial match
+    }
+
+    if (req.query.status) {
+      filters.status = req.query.status;
     }
 
     

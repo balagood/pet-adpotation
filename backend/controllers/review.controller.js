@@ -1,14 +1,35 @@
 import Review from "../models/Review.js"
+import Application from "../models/Application.js";
 
 export const addReview = async(req,res)=>{
     try {
-        const { userId,petId, shelterId, rating, comment } = req.body;
-        //const userId = req.user._id; // from authMiddleware
+      const { petId, shelterId, rating, comment } = req.body;
+      const userId = req.user._id; // from authMiddleware
 
-        const review = new Review({ userId, petId, shelterId, rating, comment });
-        await review.save();
+      const application = await Application.findOne({
+        userId,
+        petId,
+        status: "approved",
+      });
 
-        res.status(201).json({ message: "Review added successfully", review });
+      if (!application) {
+        return res.status(403).json({
+          message: "You can review only after adopting this pet",
+        });
+      }
+
+    const existingReview = await Review.findOne({ userId, petId });
+
+    if (existingReview) {
+      return res.status(400).json({
+        message: "You already reviewed this pet",
+      });
+    }
+
+    const review = new Review({ userId, petId, shelterId, rating, comment });
+    await review.save();
+
+    res.status(201).json({ message: "Review added successfully", review });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

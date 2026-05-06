@@ -55,10 +55,18 @@ const slice = createSlice({
         state.list = action.payload;
       })*/
 
-      .addCase(removeFav.fulfilled, (state, action) => {
+      /* .addCase(removeFav.fulfilled, (state, action) => {
           state.list = state.list.filter(
           (f) => f.petId?._id !== action.payload.petId
         );
+      }); */
+
+      .addCase(removeFav.fulfilled, (state, action) => {
+        const petId = action.payload;
+
+  state.list = state.list.filter(
+    (item) => String(item.petId?._id || item.petId) !== String(petId)
+  );
       });
       //comment the old code
       /*.addCase(removeFav.fulfilled, (state, action) => {  

@@ -7,7 +7,7 @@ const Pets = () => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.pets);
 
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({ status: ""});
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -35,7 +35,7 @@ const Pets = () => {
       <div className="bg-white p-4 rounded-xl shadow mb-6">
         <h3 className="font-semibold mb-3">Filter Pets</h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <input
             className="border p-2 rounded"
             placeholder="Name"
@@ -74,6 +74,17 @@ const Pets = () => {
             }}
           />
 
+          <select className="border p-2 rounded"
+  value={filters.status || ""}
+  onChange={(e) =>
+    setFilters({ ...filters, status: e.target.value })
+  }
+>
+  <option value="">All</option>
+  <option value="available">Available</option>
+  <option value="adopted">Adopted</option>
+</select>
+
           <select
             className="border p-2 rounded"
             value={filters.size || ""}
@@ -86,6 +97,8 @@ const Pets = () => {
             <option value="Medium">Medium</option>
             <option value="Large">Large</option>
           </select>
+
+          
 
           <button
             onClick={() => setFilters({})}

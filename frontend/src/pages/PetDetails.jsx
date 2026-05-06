@@ -86,6 +86,11 @@ export default function PetDetails() {
   const existingApplication = applications.find((app) => String(app.petId?._id || app.petId) === String(id)); 
   if (!pet) return <p className="p-6">Loading...</p>;
 
+  const hasAdopted = applications.some((app) =>String(app.petId?._id || app.petId) === String(id) &&app.status === "approved");
+  const hasApplied = applications.some((app) =>String(app.petId?._id || app.petId) === String(id));
+
+  if (!pet) return <p className="p-6">Loading...</p>;
+
   return (
     <div className="max-w-6xl mx-auto p-6">
 
@@ -165,8 +170,15 @@ export default function PetDetails() {
         </div>
       )}
 
+      {/* Validation Message */}
+      {user?.role === "adopter" && !hasAdopted && (
+        <p className="text-red-500 mt-4">
+          You can review only after adopting this pet
+        </p>
+      )}
+
       {/* Add Review */}
-      {user?.role === "adopter" && (
+      {user?.role === "adopter" && hasAdopted && (
         <div className="mt-8">
           <h3 className="text-xl font-bold">Add Review</h3>
 

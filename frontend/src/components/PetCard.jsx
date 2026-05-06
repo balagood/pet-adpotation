@@ -11,17 +11,24 @@ const PetCard = ({ pet }) => {
   const navigate = useNavigate();
   const user =useSelector((state)=>state.user.user)
   const favorites = useSelector((state) => state.favorites?.list || []);
-  const isFav = favorites.some((f) => f.petId?._id === pet._id);
+  //const isFav = favorites.some((f) => f.petId?._id === pet._id);
+  //const isFav = favorites.some((f) => f._id === pet._id);
+  const isFav = favorites.some(
+  (f) => (f.petId?._id || f.petId) === pet._id
+);
   const handleFavorite = () => {
   if (!user) return;
 
   if (isFav) {
-    dispatch(removeFav({ userId: user._id, petId: pet._id }))
+    dispatch(removeFav(pet._id));
+    //dispatch(removeFav({ userId: user._id, petId: pet._id }))
       //.then(() => dispatch(fetchFavorites(user._id)));
   } else {
+    //dispatch(addFav(pet));
     dispatch(addFav({ userId: user._id, petId: pet._id }))
       //.then(() => dispatch(fetchFavorites(user._id)));
   }
+  
 };
 
   const handleEdit = () => {
@@ -74,7 +81,7 @@ const PetCard = ({ pet }) => {
                   : "bg-green-500 hover:bg-green-600"
               }`}
             >
-              {isFav ? "Saved" : "Save"}
+              {isFav ? "Favorited" : "Add to Favorites"}
             </button>
           )}
 
