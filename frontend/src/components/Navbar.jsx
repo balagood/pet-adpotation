@@ -152,13 +152,9 @@ const Navbar = () => {
           {!user && (
             <li>
               <button
-                onClick={() => toggleMenu("auth")}
+                /* onClick={() => toggleMenu("auth")} */
                 className="w-full text-left font-semibold px-3 py-2 rounded hover:bg-gray-700"
               >
-                Auth
-              </button>
-
-              {openMenu === "auth" && (
                 <ul className="ml-6 mt-2 space-y-2">
                   <li>
                     <Link to="/login" className="block px-3 py-2 bg-gray-800 rounded text-purple-300">
@@ -171,7 +167,22 @@ const Navbar = () => {
                     </Link>
                   </li>
                 </ul>
-              )}
+              </button>
+
+             {/*  {openMenu === "auth" && (
+                <ul className="ml-6 mt-2 space-y-2">
+                  <li>
+                    <Link to="/login" className="block px-3 py-2 bg-gray-800 rounded text-purple-300">
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/register" className="block px-3 py-2 bg-gray-800 rounded text-purple-300">
+                      Register
+                    </Link>
+                  </li>
+                </ul>
+              )} */}
             </li>
           )}
 

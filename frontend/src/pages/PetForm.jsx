@@ -1,264 +1,376 @@
 import React, { useState, useEffect } from "react";
-import {
-  addPet,
-  updatePet,
-  getPetById
-} from "../api/petService";
-
+import { addPet, updatePet, getPetById } from "../api/petService";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 const PetForm = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
 
-  const isEdit = !!id;
+const { id } = useParams();
+const navigate = useNavigate();
+const isEdit = !!id;
 
-  const loading = useSelector(
-    (state) => state.pets?.loading
-  );
+const loading = useSelector(
+(state) => state.pets?.loading
+);
 
-  const [files, setFiles] = useState([]);
+const [files, setFiles] = useState([]);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    breed: "",
-    size: "",
-    color: "",
-    medicalHistory: "",
-    status: "available",
-  });
+const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (isEdit) {
-      fetchPet();
-    }
-  }, [id]);
+const [formData, setFormData] = useState({
+name:"",
+age:"",
+breed:"",
+size:"",
+color:"",
+medicalHistory:"",
+status:"available",
+});
 
-  const fetchPet = async () => {
-    try {
-      const pet = await getPetById(id);
+useEffect(() => {
+if (isEdit) {
+fetchPet();
+}
+}, [id]);
 
-      setFormData({
-        name: pet.name || "",
-        age: pet.age || "",
-        breed: pet.breed || "",
-        size: pet.size || "",
-        color: pet.color || "",
-        medicalHistory:
-          pet.medicalHistory || "",
-        status: pet.status || "available",
-      });
-    } catch (error) {
-      toast.error("Failed to load pet");
-    }
-  };
+const fetchPet = async () => {
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]:
-        e.target.value,
-    });
-  };
+try {
 
-  const handleFileChange = (e) => {
-    setFiles(e.target.files);
-  };
+const pet = await getPetById(id);
 
-  const validate = () => {
-    if (!/^[A-Za-z ]+$/.test(formData.name)) {
-      toast.error(
-        "Name should contain only letters"
-      );
-      return false;
-    }
+setFormData({
+name: pet.name || "",
+age: pet.age || "",
+breed: pet.breed || "",
+size: pet.size || "",
+color: pet.color || "",
+medicalHistory:
+pet.medicalHistory || "",
+status: pet.status || "available",
+});
 
-    if (!/^[0-9]+$/.test(formData.age)) {
-      toast.error(
-        "Age should contain only numbers"
-      );
-      return false;
-    }
+} catch {
+toast.error("Failed to load pet");
+}
+};
 
-    if (formData.age < 0 || !formData.age > 25) {
-    toast.error("Age must be between 0 and 25");
-    return false;
-    }
+const handleChange = (e) => {
 
-    if (
-      !/^[A-Za-z ]+$/.test(formData.breed)
-    ) {
-      toast.error(
-        "Breed should contain only letters"
-      );
-      return false;
-    }
+setFormData({
+...formData,
+[e.target.name]: e.target.value,
+});
 
-    if (
-      formData.medicalHistory.trim() === ""
-    ) {
-      toast.error(
-        "Medical history required"
-      );
-      return false;
-    }
+setErrors({
+...errors,
+[e.target.name]: "",
+});
+};
 
-    return true;
-  };
+const handleFileChange = (e) => {
+setFiles(e.target.files);
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const validate = () => {
 
-    if (!validate()) return;
+let newErrors = {};
 
-    try {
-      if (isEdit) {
-        await updatePet(
-          id,
-          formData,
-          files
-        );
+if (!formData.name.trim()) {
+newErrors.name = "Pet name is required";
+}
+else if (!/^[A-Za-z ]+$/.test(formData.name)) {
+newErrors.name =
+"Only letters allowed";
+}
 
-        toast.success(
-          "Pet updated successfully"
-        );
-      } else {
-        await addPet(
-          formData,
-          files
-        );
+if (!formData.breed.trim()) {
+newErrors.breed =
+"Breed is required";
+}
+else if (!/^[A-Za-z ]+$/.test(formData.breed)) {
+newErrors.breed =
+"Only letters allowed";
+}
 
-        toast.success(
-          "Pet added successfully"
-        );
-      }
+if (!formData.age) {
+newErrors.age = "Age required";
+}
+else if (!/^[0-9]+$/.test(formData.age)) {
+newErrors.age =
+"Only numbers allowed";
+}
+else if (
+formData.age < 0 ||
+formData.age > 25
+) {
+newErrors.age =
+"Age must be between 0-25";
+}
 
-      navigate("/shelter-dashboard");
-    } catch (error) {
-      toast.error(
-    error?.response?.data?.message ||
-    error?.message ||
-    "Something went wrong"
-  );
-      //toast.error("Something went wrong");
-    }
-  };
+if (!formData.size) {
+newErrors.size =
+"Please select size";
+}
 
-  return (
-    <div className="max-w-6xl mx-auto bg-white shadow rounded-xl p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        {isEdit
-          ? "Edit Pet"
-          : "Add New Pet"}
-      </h2>
+if (!formData.color.trim()) {
+newErrors.color =
+"Color required";
+}
 
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-      >
-        <input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Pet Name"
-          className="border p-2 rounded"
-        />
+if (!formData.medicalHistory.trim()) {
+newErrors.medicalHistory =
+"Medical history required";
+}
 
-        <input
-          name="breed"
-          value={formData.breed}
-          onChange={handleChange}
-          placeholder="Breed"
-          className="border p-2 rounded"
-        />
+if (!isEdit && files.length === 0) {
+newErrors.files =
+"Please upload image";
+}
 
-        <input
-          name="age"
-          value={formData.age}
-          onChange={handleChange}
-          placeholder="Age"
-          className="border p-2 rounded"
-        />
+setErrors(newErrors);
 
-        <select
-          name="size"
-          value={formData.size}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        >
-          <option value="">
-            Select Size
-          </option>
-          <option value="Small">
-            Small
-          </option>
-          <option value="Medium">
-            Medium
-          </option>
-          <option value="Large">
-            Large
-          </option>
-        </select>
+return Object.keys(newErrors)
+.length === 0;
+};
 
-        <input
-          name="color"
-          value={formData.color}
-          onChange={handleChange}
-          placeholder="Color"
-          className="border p-2 rounded"
-        />
+const handleSubmit = async (e) => {
 
-        <input
-          name="medicalHistory"
-          value={
-            formData.medicalHistory
-          }
-          onChange={handleChange}
-          placeholder="Medical History"
-          className="border p-2 rounded"
-        />
+e.preventDefault();
 
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        >
-          <option value="available">
-            Available
-          </option>
-          {/* <option value="adopted">
-            Adopted
-          </option>
-          <option value="fostered">
-            Fostered
-          </option> */}
-        </select>
+if (!validate()) return;
 
-        <input
-          type="file"
-          multiple
-          onChange={handleFileChange}
-          className="border p-2 rounded"
-        />
+try {
 
-        <div className="col-span-full flex justify-end">
-          <button
-            disabled={loading}
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded"
-          >
-            {isEdit
-              ? "Update Pet"
-              : "Add Pet"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+if (isEdit) {
+
+await updatePet(
+id,
+formData,
+files
+);
+
+toast.success(
+"Pet updated successfully"
+);
+
+} else {
+
+await addPet(
+formData,
+files
+);
+
+toast.success(
+"Pet added successfully"
+);
+}
+
+navigate("/shelter-dashboard");
+
+} catch (error) {
+
+toast.error(
+error?.response?.data?.message ||
+error?.message ||
+"Something went wrong"
+);
+}
+};
+
+return (
+
+<div className="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-8">
+
+<h2 className="text-3xl font-bold text-center mb-8">
+{isEdit ? "Edit Pet" : "Add New Pet"}
+</h2>
+
+<form
+onSubmit={handleSubmit}
+className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+>
+
+<div>
+<label className="font-semibold">
+Pet Name *
+</label>
+
+<input
+name="name"
+value={formData.name}
+onChange={handleChange}
+placeholder="Enter pet name"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.name}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Breed *
+</label>
+
+<input
+name="breed"
+value={formData.breed}
+onChange={handleChange}
+placeholder="Enter breed"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.breed}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Age *
+</label>
+
+<input
+name="age"
+value={formData.age}
+onChange={handleChange}
+placeholder="Enter age"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.age}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Size *
+</label>
+
+<select
+name="size"
+value={formData.size}
+onChange={handleChange}
+className="w-full border p-3 rounded mt-1"
+>
+<option value="">
+Select Size
+</option>
+
+<option value="Small">
+Small
+</option>
+
+<option value="Medium">
+Medium
+</option>
+
+<option value="Large">
+Large
+</option>
+
+</select>
+
+<p className="text-red-500 text-sm">
+{errors.size}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Color *
+</label>
+
+<input
+name="color"
+value={formData.color}
+onChange={handleChange}
+placeholder="Enter color"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.color}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Medical History *
+</label>
+
+<input
+name="medicalHistory"
+value={formData.medicalHistory}
+onChange={handleChange}
+placeholder="Medical history"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.medicalHistory}
+</p>
+</div>
+
+<div>
+<label className="font-semibold">
+Status *
+</label>
+
+<select
+name="status"
+value={formData.status}
+onChange={handleChange}
+className="w-full border p-3 rounded mt-1"
+>
+<option value="available">
+Available
+</option>
+</select>
+</div>
+
+<div>
+<label className="font-semibold">
+Upload Images *
+</label>
+
+<input
+type="file"
+multiple
+onChange={handleFileChange}
+className="w-full border p-2 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.files}
+</p>
+</div>
+
+<div className="col-span-full flex justify-end">
+
+<button
+disabled={loading}
+type="submit"
+className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
+>
+
+{loading
+? "Loading..."
+: isEdit
+? "Update Pet"
+: "Add Pet"}
+
+</button>
+
+</div>
+
+</form>
+</div>
+);
 };
 
 export default PetForm;
