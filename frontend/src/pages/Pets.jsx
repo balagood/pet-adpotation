@@ -7,7 +7,7 @@ const Pets = () => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.pets);
 
-  const [filters, setFilters] = useState({ status: ""});
+  const [filters, setFilters] = useState({ status: "",location: ""});
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -35,7 +35,7 @@ const Pets = () => {
       <div className="bg-white p-4 rounded-xl shadow mb-6">
         <h3 className="font-semibold mb-3">Filter Pets</h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-7 gap-4">
           <input
             className="border p-2 rounded"
             placeholder="Name"
@@ -70,6 +70,19 @@ const Pets = () => {
               const value = e.target.value;
               if (/^[A-Za-z ]*$/.test(value)){
                 setFilters({ ...filters, color: e.target.value })
+              }
+            }}
+          />
+
+          <input
+            className="border p-2 rounded"
+            placeholder="Location"
+            value={filters.location || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (/^[A-Za-z ]*$/.test(value)) {
+                setFilters({ ...filters, location: value });
               }
             }}
           />

@@ -34,9 +34,9 @@ export const getMyPets = async (req, res) => {
 export const addPet = async (req, res) => {
   try {
     const shelterId = req.user.id;
-    const {name, age, breed, size, color, medicalHistory, status } = req.body;
+    const {name, age, breed, size, color, medicalHistory,location, status } = req.body;
 
-    if (!name || !breed || !size || !color) {
+    if (!name || !breed || !size || !color || !location) {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
@@ -55,6 +55,7 @@ export const addPet = async (req, res) => {
       size,
       color,
       medicalHistory,
+      location,
       status,
       photos: photoPaths
     });
@@ -131,6 +132,10 @@ export const updatePet = async (req, res) => {
 
     if (updates.size && !["Small", "Medium", "Large"].includes(updates.size)) {
       return res.status(400).json({ message: "Invalid size value" });
+    }
+
+    if (updates.location && updates.location.trim() === "") {
+      return res.status(400).json({message: "Location cannot be empty"});
     }
 
     if (req.files && req.files.length > 0) {

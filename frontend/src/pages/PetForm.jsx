@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { addPet, updatePet, getPetById } from "../api/petService";
+import { FaSpinner } from "react-icons/fa";
+import { getPetById } from "../api/petService";
+import { addPet, updatePet } from "../slices/petSlice";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 
 const PetForm = () => {
 
 const { id } = useParams();
 const navigate = useNavigate();
+const dispatch = useDispatch();
 const isEdit = !!id;
+
 
 const loading = useSelector(
 (state) => state.pets?.loading
@@ -25,6 +29,7 @@ breed:"",
 size:"",
 color:"",
 medicalHistory:"",
+location:"",
 status:"available",
 });
 
@@ -48,6 +53,7 @@ size: pet.size || "",
 color: pet.color || "",
 medicalHistory:
 pet.medicalHistory || "",
+location:pet.location || "",
 status: pet.status || "available",
 });
 
@@ -70,7 +76,43 @@ setErrors({
 };
 
 const handleFileChange = (e) => {
-setFiles(e.target.files);
+//setFiles(e.target.files);
+const selectedFiles = Array.from(
+e.target.files
+);
+
+const allowedFormats = [
+"image/jpeg",
+"image/png",
+"image/jpg",
+];
+
+const invalidFiles =
+selectedFiles.filter(
+(file) =>
+!allowedFormats.includes(file.type)
+);
+
+if (invalidFiles.length > 0) {
+
+setErrors({
+...errors,
+files:
+"Only JPG, PNG, JPEG formats are supported",
+});
+
+setFiles([]);
+
+return;
+}
+
+setErrors({
+...errors,
+files:"",
+});
+
+setFiles(selectedFiles);
+
 };
 
 const validate = () => {
@@ -124,6 +166,11 @@ newErrors.medicalHistory =
 "Medical history required";
 }
 
+if (!formData.location.trim()) {
+newErrors.location =
+"Location required";
+}
+
 if (!isEdit && files.length === 0) {
 newErrors.files =
 "Please upload image";
@@ -145,11 +192,12 @@ try {
 
 if (isEdit) {
 
-await updatePet(
-id,
-formData,
-files
-);
+// await updatePet(
+// id,
+// formData,
+// files
+// );
+await dispatch(updatePet({ id, petData: formData, files })).unwrap();
 
 toast.success(
 "Pet updated successfully"
@@ -157,10 +205,11 @@ toast.success(
 
 } else {
 
-await addPet(
-formData,
-files
-);
+// await addPet(
+// formData,
+// files
+// );
+ await dispatch(addPet({ petData: formData, files })).unwrap();
 
 toast.success(
 "Pet added successfully"
@@ -317,26 +366,48 @@ className="w-full border p-3 rounded mt-1"
 </div>
 
 <div>
+
+<label className="font-semibold">
+Location *
+</label>
+
+<input
+name="location"
+value={formData.location}
+onChange={handleChange}
+placeholder="Enter location"
+className="w-full border p-3 rounded mt-1"
+/>
+
+<p className="text-red-500 text-sm">
+{errors.location}
+</p>
+
+</div>
+
+<div>
 <label className="font-semibold">
 Status *
 </label>
 
-<select
+<input
+type="text"
 name="status"
-value={formData.status}
-onChange={handleChange}
-className="w-full border p-3 rounded mt-1"
->
-<option value="available">
-Available
-</option>
-</select>
+value="Available"
+readOnly
+className="w-full border p-3 rounded mt-1 bg-gray-100 text-gray-600 cursor-not-allowed"
+/>
 </div>
 
 <div>
 <label className="font-semibold">
 Upload Images *
 </label>
+
+<p className="text-xs text-gray-500 mt-1 mb-2">
+Supported formats:
+JPG, PNG, JPEG
+</p>
 
 <input
 type="file"
@@ -352,7 +423,7 @@ className="w-full border p-2 rounded mt-1"
 
 <div className="col-span-full flex justify-end">
 
-<button
+{/* <button
 disabled={loading}
 type="submit"
 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
@@ -363,6 +434,42 @@ className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg"
 : isEdit
 ? "Update Pet"
 : "Add Pet"}
+
+</button> */}
+<button
+disabled={loading}
+type="submit"
+className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center gap-2
+
+${
+loading
+? "bg-blue-400 cursor-not-allowed"
+: "bg-blue-600 hover:bg-blue-700"
+}
+`}
+>
+
+{loading ? (
+
+<>
+
+<FaSpinner className="animate-spin" />
+
+<span>
+{isEdit
+? "Updating Pet..."
+: "Adding Pet..."}
+</span>
+
+</>
+
+) : (
+
+isEdit
+? "Update Pet"
+: "Add Pet"
+
+)}
 
 </button>
 

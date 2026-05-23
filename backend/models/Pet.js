@@ -8,6 +8,7 @@ const petSchema = new mongoose.Schema({
   size: String,
   color: String,
   medicalHistory: String,
+  location: { type:String, required:true },
   status: { type: String, enum: ['available', 'adopted', 'fostered'], default: 'available' },
   photos: [String], // URLs
  // videos: [String], // URLs

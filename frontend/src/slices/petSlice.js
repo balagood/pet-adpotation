@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getPets, updatePet as updatePetService} from "../api/petService";
+import { getPets, updatePet as updatePetService,addPet as addPetService} from "../api/petService";
 import axios from "axios";
+import { BASE_URL } from "../config";
 
 export const fetchPets = createAsyncThunk("pets/getPets", async (filters = {}) => {
   const query = new URLSearchParams(filters).toString();
-  const url = query ? `https://pet-adpotations.onrender.com/pets/getPets?${query}` : `https://pet-adpotations.onrender.com/pets/getPets`;
+  const url = query ? `${BASE_URL}/pets/getPets?${query}` : `${BASE_URL}/pets/getPets`;
   const res = await axios.get(url);
   return res.data;
 
@@ -16,8 +17,14 @@ export const fetchPets = createAsyncThunk("pets/getPets", async (filters = {}) =
   return await updatePetService(id, petData);
 }); */
 
-export const updatePet = createAsyncThunk("pets/updatePet",async ({ id, petData }) => {
-    const res = await updatePetService(id, petData);
+export const addPet = createAsyncThunk("pets/addPet",async ({ petData, files }) => {
+    const res = await addPetService(petData, files);
+    return res;
+  }
+);
+
+export const updatePet = createAsyncThunk("pets/updatePet",async ({ id, petData,files }) => {
+    const res = await updatePetService(id, petData,files);
     return res;
   }
 );
@@ -38,6 +45,23 @@ const petSlice = createSlice({
         state.list = action.payload;
       })
       .addCase(fetchPets.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      
+      .addCase(addPet.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addPet.fulfilled, (state, action) => {
+        state.loading = false;
+
+        // backend returns { pet: {...} }
+        const newPet = action.payload.pet || action.payload;
+
+        state.list.unshift(newPet);
+      })
+      .addCase(addPet.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
