@@ -11,7 +11,11 @@ export const addFavorite = async (req, res) => {
     const fav = new Favorite({ userId, petId });
     await fav.save();
 
-    res.json(fav);
+    const populatedFav = await Favorite.findById(fav._id)
+  .populate("petId");
+
+res.json(populatedFav);
+    //res.json(fav);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

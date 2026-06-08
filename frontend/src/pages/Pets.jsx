@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPets } from "../slices/petSlice";
 import PetCard from "../components/PetCard";
+import { fetchFavorites } from "../slices/favoriteSlice";
 
 const Pets = () => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.pets);
 
   const [filters, setFilters] = useState({ status: "",location: ""});
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -17,6 +19,11 @@ const Pets = () => {
     return () => clearTimeout(timeout);
   }, [dispatch, filters]);
 
+  useEffect(() => {
+  if (user?._id) {
+    dispatch(fetchFavorites(user._id));
+  }
+}, [dispatch, user]);
   if (loading) return <p className="text-center p-6">Loading pets...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 

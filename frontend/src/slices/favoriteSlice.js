@@ -29,56 +29,45 @@ export const removeFav = createAsyncThunk(
 
 const slice = createSlice({
   name: "favorites",
-  initialState: { list: [],loading:false,error:null },
+  initialState: {
+    list: [],
+    loading: false,
+    error: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
+
+      // Add Favorite
       .addCase(addFav.fulfilled, (state, action) => {
-          state.list.push(action.payload);
+        state.list.push(action.payload);
       })
 
+      // Fetch Favorites
       .addCase(fetchFavorites.pending, (state) => {
-          state.loading = true;
+        state.loading = true;
+        state.error = null;
       })
+
       .addCase(fetchFavorites.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload;
       })
+
       .addCase(fetchFavorites.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
-            
-      /*
-      comment the old code
-      .addCase(fetchFavorites.fulfilled, (state, action) => {
-        state.list = action.payload;
-      })*/
 
-      /* .addCase(removeFav.fulfilled, (state, action) => {
-          state.list = state.list.filter(
-          (f) => f.petId?._id !== action.payload.petId
-        );
-      }); */
-
+      // Remove Favorite
       .addCase(removeFav.fulfilled, (state, action) => {
-        const petId = action.payload;
-
-  state.list = state.list.filter(
-    (item) => String(item.petId?._id || item.petId) !== String(petId)
-  );
+        state.list = state.list.filter(
+          (item) =>
+            String(item.petId?._id || item.petId) !==
+            String(action.payload.petId)
+        );
       });
-      //comment the old code
-      /*.addCase(removeFav.fulfilled, (state, action) => {  
-            state.list = state.list.filter(
-                (f) =>
-                !(
-                    f.userId === action.payload.userId &&
-                    f.petId._id === action.payload.petId
-                )
-            );
-      });*/
-    },
+  },
 });
 
 export default slice.reducer;
