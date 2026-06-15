@@ -7,10 +7,27 @@ import cloudinary from "../config/cloudinary.js";
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: "pets",
-    allowed_formats: ["jpg", "png", "jpeg"],
+  params: async(req, file) => {
+    if (file.fieldname  === "videos") {
+      return {
+        folder: "pets/videos",
+        resource_type: "video",
+        allowed_formats: ["mp4", "mov"],
+      };
+    }
+    if(file.fieldname  === "photos"){
+      return {
+        folder: "pets/images",
+        resource_type: "image",
+        allowed_formats: ["jpg", "png", "jpeg"],
+      };
+    }
+    
   },
+  // params: {
+  //   folder: "pets",
+  //   allowed_formats: ["jpg", "png", "jpeg","mp4","mov"],
+  // },
 });
 
 export const upload = multer({ storage });
@@ -33,8 +50,10 @@ export const getMyPets = async (req, res) => {
 
 export const addPet = async (req, res) => {
   try {
+    console.log("FILES RECEIVED:", req.files);
+
     const shelterId = req.user.id;
-    const {name, age, breed, size, color, medicalHistory,location, status } = req.body;
+    const { name, age, breed, size, color, medicalHistory, location, status } = req.body;
 
     if (!name || !breed || !size || !color || !location) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -43,9 +62,14 @@ export const addPet = async (req, res) => {
     if (age < 0 || age > 25) {
       return res.status(400).json({ message: "Invalid age value" });
     }
-    //const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
-    const photoPaths = req.files? req.files.map(file => file.path): [];
+    const photoPaths = req.files?.photos
+      ? req.files.photos.map(file => file.path)
+      : [];
+
+    const videoPaths = req.files?.videos
+      ? req.files.videos.map(file => file.path)
+      : [];
 
     const pet = new Pet({
       shelterId,
@@ -57,16 +81,19 @@ export const addPet = async (req, res) => {
       medicalHistory,
       location,
       status,
-      photos: photoPaths
+      photos: photoPaths,
+      videos: videoPaths
     });
 
     await pet.save();
+
     res.status(201).json({ message: "Pet added successfully", pet });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const getPets = async (req, res) => {
   try {
@@ -120,11 +147,6 @@ export const getPetById = async (req, res) => {
 export const updatePet = async (req, res) => {
   try {
     const updates = req.body;
-    const photoPaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
-
-   /*  if (photoPaths.length > 0) {
-      updates.photos = photoPaths;
-    } */
 
     if (updates.age && (updates.age < 0 || updates.age > 25)) {
       return res.status(400).json({ message: "Invalid age value" });
@@ -135,22 +157,34 @@ export const updatePet = async (req, res) => {
     }
 
     if (updates.location && updates.location.trim() === "") {
-      return res.status(400).json({message: "Location cannot be empty"});
+      return res.status(400).json({ message: "Location cannot be empty" });
     }
 
-    if (req.files && req.files.length > 0) {
-      updates.photos = req.files.map(file => file.path);
+    // FIXED FILE HANDLING
+    if (req.files?.photos) {
+      updates.photos = req.files.photos.map(file => file.path);
     }
 
-    //const pet = await Pet.findByIdAndUpdate(req.params.id, updates, { new: true }).select("-__v");
-    const pet = await Pet.findOneAndUpdate({ _id:req.params.id, shelterId:req.user.id },updates,{ new:true });
-    if (!pet) return res.status(404).json({ message: "Pet not found" });
-    res.json(pet);
+    if (req.files?.videos) {
+      updates.videos = req.files.videos.map(file => file.path);
+    }
+
+    const pet = await Pet.findOneAndUpdate(
+      { _id: req.params.id, shelterId: req.user.id },
+      updates,
+      { new: true }
+    );
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet not found" });
+    }
+
+    res.json({ message: "Updated successfully", pet });
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const deletePet = async (req, res) => {
   try {

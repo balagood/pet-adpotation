@@ -85,6 +85,8 @@ const allowedFormats = [
 "image/jpeg",
 "image/png",
 "image/jpg",
+"video/mp4",
+"video/quicktime",
 ];
 
 const invalidFiles =
@@ -406,12 +408,15 @@ Upload Images *
 
 <p className="text-xs text-gray-500 mt-1 mb-2">
 Supported formats:
-JPG, PNG, JPEG
+JPG, PNG, JPEG,MP4, MOV
+(Video is optional)
 </p>
 
 <input
 type="file"
+name="photos"
 multiple
+accept="image/*,video/*"
 onChange={handleFileChange}
 className="w-full border p-2 rounded mt-1"
 />

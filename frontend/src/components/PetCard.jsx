@@ -57,6 +57,7 @@ const PetCard = ({ pet }) => {
       <p>Age: {pet.age} years</p>
       <p>Size: {pet.size}</p>
       <p>Status: {pet.status}</p>
+      <p>Medical History: {pet.medicalHistory || "No medical history available"}</p>
       {/*<div className="flex gap-2 mt-3">
         <button onClick={handleEdit} className="px-3 py-1 bg-blue-500 text-white rounded">Edit</button> 
         <button onClick={handleViewDetails => navigate(`/pet/${pet._id}`)} className="px-3 py-1 bg-gray-500 text-white rounded">View Details</button>

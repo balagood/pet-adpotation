@@ -22,14 +22,21 @@ export const addPet = async (petData,files) => {
 
 
   if (files && files.length > 0) {
-    for (let i = 0; i < files.length; i++) {
-      data.append("image", files[i]);
-    }
+    // for (let i = 0; i < files.length; i++) {
+    //   data.append("files", files[i]);
+    // }
+    files.forEach((file) => {
+      if (file.type.startsWith("image")) {
+        data.append("photos", file);
+      } else if (file.type.startsWith("video")) {
+        data.append("videos", file);
+      }
+    });
   }
   const res = await axios.post(`${API_URL}/addPet`, data, {
     headers: {
       Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "multipart/form-data",
+      //"Content-Type": "multipart/form-data",
     },
   });
 
@@ -77,9 +84,16 @@ export const updatePet = async (
   });
 
   if (files && files.length > 0) {
-    for (let i = 0; i < files.length; i++) {
-      data.append("image", files[i]);
-    }
+    // for (let i = 0; i < files.length; i++) {
+    //   data.append("files", files[i]);
+    // }
+    files.forEach((file) => {
+      if (file.type.startsWith("image")) {
+        data.append("photos", file);
+      } else if (file.type.startsWith("video")) {
+        data.append("videos", file);
+      }
+    });
   }
 
   const res = await axios.put(
@@ -88,7 +102,7 @@ export const updatePet = async (
     {
       headers: {
         Authorization: `Bearer ${getToken()}`,
-        "Content-Type": "multipart/form-data",
+        //"Content-Type": "multipart/form-data",
       },
     }
   );

@@ -121,8 +121,24 @@ export default function PetDetails() {
                 className="h-20 w-full object-cover rounded"
               />
             ))}
+
+            {pet.videos && pet.videos.length > 0 && (
+              <div className="mt-4">
+                <h2 className="text-xl font-bold mb-2">Pet Video</h2>
+
+                <video
+                  controls
+                  className="w-full rounded-xl"
+                >
+                  <source src={pet.videos[0]} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            )}
           </div>
         </div>
+
+
 
         {/* Info */}
         <div>
@@ -168,6 +184,18 @@ export default function PetDetails() {
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-2">About</h2>
           <p className="text-gray-600">{pet.description}</p>
+        </div>
+      )}
+
+      {pet.medicalHistory && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold mb-2">Medical History</h2>
+
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <p className="text-gray-700 whitespace-pre-line">
+              {pet.medicalHistory}
+            </p>
+          </div>
         </div>
       )}
 
