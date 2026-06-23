@@ -22,7 +22,7 @@ const storage = new CloudinaryStorage({
         allowed_formats: ["jpg", "png", "jpeg"],
       };
     }
-    
+    throw new Error("Invalid file field");
   },
   // params: {
   //   folder: "pets",
@@ -98,9 +98,9 @@ export const addPet = async (req, res) => {
 export const getPets = async (req, res) => {
   try {
     const filters = {};
-    if (req.query.species && req.query.species.trim() !== "") {
-      filters.species = req.query.species;
-    }
+    // if (req.query.species && req.query.species.trim() !== "") {
+    //   filters.species = req.query.species;
+    // }
     if (req.query.breed && req.query.breed.trim() !== "") {
       filters.breed = req.query.breed;
     }
@@ -147,6 +147,7 @@ export const getPetById = async (req, res) => {
 export const updatePet = async (req, res) => {
   try {
     const updates = req.body;
+    const existingPet = await Pet.findById(req.params.id);
 
     if (updates.age && (updates.age < 0 || updates.age > 25)) {
       return res.status(400).json({ message: "Invalid age value" });
@@ -162,11 +163,13 @@ export const updatePet = async (req, res) => {
 
     // FIXED FILE HANDLING
     if (req.files?.photos) {
-      updates.photos = req.files.photos.map(file => file.path);
+      //updates.photos = req.files.photos.map(file => file.path);
+      updates.photos = [...existingPet.photos,...req.files.photos.map(file => file.path)];
     }
 
     if (req.files?.videos) {
-      updates.videos = req.files.videos.map(file => file.path);
+      //updates.videos = req.files.videos.map(file => file.path);
+      updates.videos = [...existingPet.videos,...req.files.videos.map(file => file.path)];
     }
 
     const pet = await Pet.findOneAndUpdate(

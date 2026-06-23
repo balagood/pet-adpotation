@@ -1,27 +1,27 @@
-import { useParams,useNavigate } from "react-router-dom";
-import { useDispatch,useSelector } from "react-redux";
-import { applyPet } from "../slices/applicationSlice";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { applyPet, fetchUserApplications } from "../slices/applicationSlice";
 import { useEffect, useState } from "react";
 import { getPetById } from "../api/petService";
 import { fetchReviews, createReview } from "../slices/reviewSlice";
-import { fetchUserApplications } from "../slices/applicationSlice";
-import { BASE_URL } from "../config";
 import toast from "react-hot-toast";
 
 export default function PetDetails() {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const loading = useSelector((state) => state.applications.loading);
   const reviews = useSelector((state) => state.reviews?.list || []);
   const user = useSelector((state) => state.user.user);
-
-  //const applications = useSelector((state) => state.applications.list);
   const applications = useSelector((state) => state.applications.list || []);
+
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [pet, setPet] = useState(null);
+
+  // Carousel state
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchPet = async () => {
@@ -36,10 +36,10 @@ export default function PetDetails() {
   }, [id, dispatch]);
 
   useEffect(() => {
-  if (user?._id) {
-    dispatch(fetchUserApplications(user._id));
-  }
-}, [dispatch, user]);
+    if (user?._id) {
+      dispatch(fetchUserApplications(user._id));
+    }
+  }, [dispatch, user]);
 
   const handleApply = async () => {
     try {
@@ -48,17 +48,14 @@ export default function PetDetails() {
       await dispatch(
         applyPet({
           petId: id,
-          //userId: user._id,
-          //shelterId: pet.shelterId,
           shelterId: pet.shelterId?._id || pet.shelterId,
-          //status:"submitted",
         })
       ).unwrap();
 
       await dispatch(fetchUserApplications(user._id));
+
       toast.success("Application submitted successfully");
       navigate("/applications");
-
     } catch {
       toast.error("Error submitting application");
     }
@@ -83,18 +80,32 @@ export default function PetDetails() {
     dispatch(fetchReviews(id));
   };
 
-  //const existingApplication = applications.find((app) =>(app.petId?._id || app.petId) === id);
-  const existingApplication = applications.find((app) => String(app.petId?._id || app.petId) === String(id)); 
+  const existingApplication = applications.find(
+    (app) => String(app.petId?._id || app.petId) === String(id)
+  );
+
+  const hasAdopted = applications.some(
+    (app) =>
+      String(app.petId?._id || app.petId) === String(id) &&
+      app.status === "approved"
+  );
+
   if (!pet) return <p className="p-6">Loading...</p>;
 
-  const hasAdopted = applications.some((app) =>String(app.petId?._id || app.petId) === String(id) &&app.status === "approved");
-  const hasApplied = applications.some((app) =>String(app.petId?._id || app.petId) === String(id));
-
-  if (!pet) return <p className="p-6">Loading...</p>;
+  // Merge photos + videos into one carousel
+  const media = [
+    ...(pet?.photos || []).map((item) => ({
+      type: "image",
+      url: item,
+    })),
+    ...(pet?.videos || []).map((item) => ({
+      type: "video",
+      url: item,
+    })),
+  ];
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
@@ -104,46 +115,84 @@ export default function PetDetails() {
 
       {/* Top Layout */}
       <div className="grid md:grid-cols-2 gap-8">
-        
-
-        {/* Images */}
+        {/* Carousel Section */}
         <div>
-          <img
-            src={pet.photos?.[0] || "/no-image.png"}
-            className="w-full h-96 object-cover rounded-xl"
-          />
+          {media.length > 0 && (
+            <>
+              {/* Main Media */}
+              <div className="relative">
+                {media[currentIndex].type === "image" ? (
+                  <img
+                    src={media[currentIndex].url}
+                    alt="Pet"
+                    className="w-full h-96 object-cover rounded-xl"
+                  />
+                ) : (
+                  <video
+                    controls
+                    className="w-full h-96 object-cover rounded-xl"
+                  >
+                    <source
+                      src={media[currentIndex].url}
+                      type="video/mp4"
+                    />
+                  </video>
+                )}
 
-          <div className="grid grid-cols-4 gap-2 mt-2">
-            {pet.photos?.slice(1).map((img, i) => (
-              <img
-                key={i}
-                src={`${BASE_URL}${img}`}
-                className="h-20 w-full object-cover rounded"
-              />
-            ))}
+                {/* Previous Button */}
+                {currentIndex > 0 && (
+                  <button
+                    onClick={() =>
+                      setCurrentIndex(currentIndex - 1)
+                    }
+                    className="absolute left-2 top-1/2 bg-black text-white px-3 py-1 rounded"
+                  >
+                    ❮
+                  </button>
+                )}
 
-            {pet.videos && pet.videos.length > 0 && (
-              <div className="mt-4">
-                <h2 className="text-xl font-bold mb-2">Pet Video</h2>
-
-                <video
-                  controls
-                  className="w-full rounded-xl"
-                >
-                  <source src={pet.videos[0]} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                {/* Next Button */}
+                {currentIndex < media.length - 1 && (
+                  <button
+                    onClick={() =>
+                      setCurrentIndex(currentIndex + 1)
+                    }
+                    className="absolute right-2 top-1/2 bg-black text-white px-3 py-1 rounded"
+                  >
+                    ❯
+                  </button>
+                )}
               </div>
-            )}
-          </div>
+
+              {/* Thumbnails */}
+              <div className="flex gap-2 mt-3 overflow-x-auto">
+                {media.map((item, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className="cursor-pointer"
+                  >
+                    {item.type === "image" ? (
+                      <img
+                        src={item.url}
+                        alt="thumbnail"
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                    ) : (
+                      <video className="w-20 h-20 object-cover rounded">
+                        <source src={item.url} type="video/mp4" />
+                      </video>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-
-
-        {/* Info */}
+        {/* Pet Info */}
         <div>
           <h1 className="text-3xl font-bold">{pet.name}</h1>
-
           <p className="text-gray-600 mt-1">{pet.breed}</p>
 
           <div className="grid grid-cols-2 gap-4 mt-4">
@@ -167,30 +216,33 @@ export default function PetDetails() {
               <p className="font-semibold">{pet.location || "N/A"}</p>
             </div>
           </div>
+
           {pet.status === "available" && user?.role === "adopter" && (
-          <button
-            onClick={handleApply}
-            disabled={loading || existingApplication}
-           className={`w-full mt-6 py-3 rounded-lg text-white ${existingApplication? "bg-gray-400 cursor-not-allowed": loading? "bg-gray-400": "bg-blue-600 hover:bg-blue-700"}`}>
-           {existingApplication? "Already Applied": loading? "Applying...": "Adopt this Pet"}
-          </button> 
+            <button
+              onClick={handleApply}
+              disabled={loading || existingApplication}
+              className={`w-full mt-6 py-3 rounded-lg text-white ${
+                existingApplication
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : loading
+                  ? "bg-gray-400"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {existingApplication
+                ? "Already Applied"
+                : loading
+                ? "Applying..."
+                : "Adopt this Pet"}
+            </button>
           )}
         </div>
-
       </div>
 
-      {/* Description */}
-      {pet.description && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-2">About</h2>
-          <p className="text-gray-600">{pet.description}</p>
-        </div>
-      )}
-
+      {/* Medical History */}
       {pet.medicalHistory && (
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-2">Medical History</h2>
-
           <div className="bg-gray-100 p-4 rounded-lg">
             <p className="text-gray-700 whitespace-pre-line">
               {pet.medicalHistory}
@@ -199,7 +251,7 @@ export default function PetDetails() {
         </div>
       )}
 
-      {/* Validation Message */}
+      {/* Review Restriction */}
       {user?.role === "adopter" && !hasAdopted && (
         <p className="text-red-500 mt-4">
           You can review only after adopting this pet
@@ -217,14 +269,16 @@ export default function PetDetails() {
               onChange={(e) => setRating(Number(e.target.value))}
               className="border p-2 rounded"
             >
-              {[1,2,3,4,5].map(n => (
-                <option key={n} value={n}>{n} Star</option>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={n}>
+                  {n} Star
+                </option>
               ))}
             </select>
 
             <input
               value={comment}
-              onChange={(e)=>setComment(e.target.value)}
+              onChange={(e) => setComment(e.target.value)}
               placeholder="Write comment..."
               className="border p-2 flex-1 rounded"
             />
@@ -251,13 +305,14 @@ export default function PetDetails() {
           {reviews.map((r) => (
             <div key={r._id} className="border p-3 rounded-lg">
               <p className="font-semibold">{r.userId?.name}</p>
-              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
+              <p className="text-yellow-500">
+                {"⭐".repeat(r.rating)}
+              </p>
               <p className="text-gray-600">{r.comment}</p>
             </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 }

@@ -50,8 +50,22 @@ const PetCard = ({ pet }) => {
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-4">
 
-     <img src={pet.photos?.[0] || "/no-image.png"}alt={pet.name}className="w-full h-48 object-cover rounded"/>
+     {/* <img src={pet.photos?.[0] || "/no-image.png"}alt={pet.name}className="w-full h-48 object-cover rounded"/> */}
 
+      {pet.photos?.length > 0 ? (<img src={pet.photos[0]} alt={pet.name} className="w-full h-48 object-cover rounded"/>) : pet.videos?.length > 0 ? (
+        <video
+          controls
+          className="w-full h-48 object-cover rounded"
+        >
+          <source src={pet.videos[0]} type="video/mp4" />
+        </video>
+      ) : (
+        <img
+          src="/no-image.png"
+          alt="No media"
+          className="w-full h-48 object-cover rounded"
+        />
+      )}
       <h2 className="text-lg font-bold mt-2">{pet.name}</h2>
       <p>Breed: {pet.breed}</p>
       <p>Age: {pet.age} years</p>

@@ -1,81 +1,71 @@
 import axios from "axios";
 import { BASE_URL } from "../config";
 
-//const API_URL = "https://pet-adpotations.onrender.com/pets"; // base URL for pets
-//const API_URL = `${import.meta.env.VITE_API_BASE_URL}/pets`;
-
 const API_URL = `${BASE_URL}/pets`;
 
 const getToken = () => localStorage.getItem("token");
 
-export const addPet = async (petData,files) => {
-  //const res = await axios.post(`${API_URL}/addPets`, petData);
+export const addPet = async (
+  petData,
+  photoFiles,
+  videoFiles
+) => {
   const data = new FormData();
-  // append all pet fields
+
+  // append pet fields
   Object.keys(petData).forEach((key) => {
     data.append(key, petData[key]);
   });
-  // append image file
-  // if (file) {
-  //   data.append("image", file); // backend should expect "image"
-  // }
 
-
-  if (files && files.length > 0) {
-    // for (let i = 0; i < files.length; i++) {
-    //   data.append("files", files[i]);
-    // }
-    files.forEach((file) => {
-      if (file.type.startsWith("image")) {
-        data.append("photos", file);
-      } else if (file.type.startsWith("video")) {
-        data.append("videos", file);
-      }
+  // append photos
+  if (photoFiles && photoFiles.length > 0) {
+    photoFiles.forEach((file) => {
+      data.append("photos", file);
     });
   }
-  const res = await axios.post(`${API_URL}/addPet`, data, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      //"Content-Type": "multipart/form-data",
-    },
-  });
+
+  // append videos
+  if (videoFiles && videoFiles.length > 0) {
+    videoFiles.forEach((file) => {
+      data.append("videos", file);
+    });
+  }
+
+  const res = await axios.post(
+    `${API_URL}/addPet`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${getToken()}`
+      }
+    }
+  );
 
   return res.data;
 };
-
 
 export const getPets = async (filters = {}) => {
-  
   const query = new URLSearchParams(filters).toString();
-  const url = query ? `${API_URL}/getPets?${query}` : `${API_URL}/getPets`;
+  const url = query
+    ? `${API_URL}/getPets?${query}`
+    : `${API_URL}/getPets`;
+
   const res = await axios.get(url);
   return res.data;
-  
-  //const res = await axios.get(`${API_URL}/getPets`);
-  //return res.data;
 };
-
 
 export const getPetById = async (id) => {
-  const res = await axios.get(`${API_URL}/getPetsById/${id}`);
+  const res = await axios.get(
+    `${API_URL}/getPetsById/${id}`
+  );
   return res.data;
 };
-
-
-// export const updatePet = async (id, petData) => {
-//   const res = await axios.put(`${API_URL}/updatePets/${id}`, petData);
-//   return res.data;
-// };
-
-// export const deletePet = async (id) => {
-//   const res = await axios.delete(`${API_URL}/deletePets/${id}`);
-//   return res.data;
-// };
 
 export const updatePet = async (
   id,
   petData,
-  files
+  photoFiles,
+  videoFiles
 ) => {
   const data = new FormData();
 
@@ -83,16 +73,17 @@ export const updatePet = async (
     data.append(key, petData[key]);
   });
 
-  if (files && files.length > 0) {
-    // for (let i = 0; i < files.length; i++) {
-    //   data.append("files", files[i]);
-    // }
-    files.forEach((file) => {
-      if (file.type.startsWith("image")) {
-        data.append("photos", file);
-      } else if (file.type.startsWith("video")) {
-        data.append("videos", file);
-      }
+  // append photos
+  if (photoFiles && photoFiles.length > 0) {
+    photoFiles.forEach((file) => {
+      data.append("photos", file);
+    });
+  }
+
+  // append videos
+  if (videoFiles && videoFiles.length > 0) {
+    videoFiles.forEach((file) => {
+      data.append("videos", file);
     });
   }
 
@@ -101,9 +92,8 @@ export const updatePet = async (
     data,
     {
       headers: {
-        Authorization: `Bearer ${getToken()}`,
-        //"Content-Type": "multipart/form-data",
-      },
+        Authorization: `Bearer ${getToken()}`
+      }
     }
   );
 
@@ -115,8 +105,8 @@ export const deletePet = async (id) => {
     `${API_URL}/deletePets/${id}`,
     {
       headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
+        Authorization: `Bearer ${getToken()}`
+      }
     }
   );
 
@@ -128,8 +118,8 @@ export const getMyPets = async () => {
     `${API_URL}/myPets`,
     {
       headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
+        Authorization: `Bearer ${getToken()}`
+      }
     }
   );
 
