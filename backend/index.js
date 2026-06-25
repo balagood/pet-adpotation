@@ -9,6 +9,7 @@ import shelterRoutes from './routes/shelter.route.js'
 import applicationRoutes from './routes/application.route.js'
 import favoriteRoutes from './routes/favorite.route.js'
 import reviewRoutes from './routes/review.route.js'
+import shelterReviewRoutes from "./routes/shelterReview.route.js";
 
 import swaggerUI from 'swagger-ui-express'
 import swaggerSpec from './config/swagger.js'
@@ -41,6 +42,9 @@ app.use('/shelters',shelterRoutes)
 app.use('/application',applicationRoutes)
 app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
+app.use('/shelter-review',shelterReviewRoutes)
+
+
 
 
 

@@ -4,6 +4,7 @@ import { applyPet, fetchUserApplications } from "../slices/applicationSlice";
 import { useEffect, useState } from "react";
 import { getPetById } from "../api/petService";
 import { fetchReviews, createReview } from "../slices/reviewSlice";
+import { fetchShelterReviews,createShelterReview} from "../slices/shelterReviewSlice";
 import toast from "react-hot-toast";
 
 export default function PetDetails() {
@@ -15,6 +16,10 @@ export default function PetDetails() {
   const reviews = useSelector((state) => state.reviews?.list || []);
   const user = useSelector((state) => state.user.user);
   const applications = useSelector((state) => state.applications.list || []);
+  const shelterReviews = useSelector((state) => state.shelterReviews?.list || []);
+
+const [shelterRating, setShelterRating] = useState(5);
+const [shelterComment, setShelterComment] = useState("");
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -26,8 +31,14 @@ export default function PetDetails() {
   useEffect(() => {
     const fetchPet = async () => {
       const data = await getPetById(id);
+
+      console.log("Pet Data:", data);
+      console.log("Photos:", data.photos);
+      console.log("Videos:", data.videos);
+
       setPet(data);
     };
+
     fetchPet();
   }, [id]);
 
@@ -40,6 +51,12 @@ export default function PetDetails() {
       dispatch(fetchUserApplications(user._id));
     }
   }, [dispatch, user]);
+
+  useEffect(() => {
+  if (pet?.shelterId) {
+    dispatch(fetchShelterReviews(pet.shelterId));
+  }
+}, [pet, dispatch]);
 
   const handleApply = async () => {
     try {
@@ -80,6 +97,17 @@ export default function PetDetails() {
     dispatch(fetchReviews(id));
   };
 
+  const handleShelterReview = async () => {
+    await dispatch(
+      createShelterReview({
+        userId: user._id,
+        shelterId: pet.shelterId,
+        rating: shelterRating,
+        comment: shelterComment,
+      })
+    );
+  };
+
   const existingApplication = applications.find(
     (app) => String(app.petId?._id || app.petId) === String(id)
   );
@@ -96,11 +124,11 @@ export default function PetDetails() {
   const media = [
     ...(pet?.photos || []).map((item) => ({
       type: "image",
-      url: item,
+      url: item.url || item,
     })),
     ...(pet?.videos || []).map((item) => ({
       type: "video",
-      url: item,
+      url: item.url || item,
     })),
   ];
 
@@ -121,19 +149,21 @@ export default function PetDetails() {
             <>
               {/* Main Media */}
               <div className="relative">
-                {media[currentIndex].type === "image" ? (
+                {media[currentIndex]?.type === "image" ? (
                   <img
-                    src={media[currentIndex].url}
+                    key={currentIndex}
+                    src={media[currentIndex]?.url}
                     alt="Pet"
                     className="w-full h-96 object-cover rounded-xl"
                   />
                 ) : (
                   <video
+                    key={currentIndex}
                     controls
                     className="w-full h-96 object-cover rounded-xl"
                   >
                     <source
-                      src={media[currentIndex].url}
+                      src={media[currentIndex]?.url}
                       type="video/mp4"
                     />
                   </video>
@@ -142,9 +172,7 @@ export default function PetDetails() {
                 {/* Previous Button */}
                 {currentIndex > 0 && (
                   <button
-                    onClick={() =>
-                      setCurrentIndex(currentIndex - 1)
-                    }
+                    onClick={() => setCurrentIndex(currentIndex - 1)}
                     className="absolute left-2 top-1/2 bg-black text-white px-3 py-1 rounded"
                   >
                     ❮
@@ -154,9 +182,7 @@ export default function PetDetails() {
                 {/* Next Button */}
                 {currentIndex < media.length - 1 && (
                   <button
-                    onClick={() =>
-                      setCurrentIndex(currentIndex + 1)
-                    }
+                    onClick={() => setCurrentIndex(currentIndex + 1)}
                     className="absolute right-2 top-1/2 bg-black text-white px-3 py-1 rounded"
                   >
                     ❯
@@ -170,12 +196,14 @@ export default function PetDetails() {
                   <div
                     key={index}
                     onClick={() => setCurrentIndex(index)}
-                    className="cursor-pointer"
+                    className={`cursor-pointer border-2 rounded ${
+                      currentIndex === index ? "border-blue-500" : "border-transparent"
+                    }`}
                   >
                     {item.type === "image" ? (
                       <img
                         src={item.url}
-                        alt="thumbnail"
+                        alt={`thumbnail-${index}`}
                         className="w-20 h-20 object-cover rounded"
                       />
                     ) : (
@@ -305,9 +333,58 @@ export default function PetDetails() {
           {reviews.map((r) => (
             <div key={r._id} className="border p-3 rounded-lg">
               <p className="font-semibold">{r.userId?.name}</p>
-              <p className="text-yellow-500">
-                {"⭐".repeat(r.rating)}
-              </p>
+              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
+              <p className="text-gray-600">{r.comment}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SHELTER REVIEWS */}
+      <div className="mt-10">
+        <h3 className="text-xl font-bold">Shelter Reviews</h3>
+
+        {/* Add form */}
+        {user?.role === "adopter" && hasAdopted && (
+          <div className="flex gap-2 mt-4">
+            <select
+              value={shelterRating}
+              onChange={(e) => setShelterRating(Number(e.target.value))}
+              className="border p-2 rounded"
+            >
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+
+            <input
+              value={shelterComment}
+              onChange={(e) => setShelterComment(e.target.value)}
+              placeholder="Write shelter review..."
+              className="border p-2 flex-1 rounded"
+            />
+
+            <button
+              onClick={handleShelterReview}
+              className="bg-blue-500 text-white px-4 rounded"
+            >
+              Submit
+            </button>
+          </div>
+        )}
+
+        {/* List reviews */}
+        <div className="space-y-3 mt-4">
+          {shelterReviews?.length === 0 && (
+            <p className="text-gray-500">No shelter reviews yet</p>
+          )}
+
+          {shelterReviews?.map((r) => (
+            <div key={r._id} className="border p-3 rounded-lg">
+              <p className="font-semibold">{r.userId?.name}</p>
+              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
               <p className="text-gray-600">{r.comment}</p>
             </div>
           ))}

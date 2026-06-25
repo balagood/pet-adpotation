@@ -4,6 +4,8 @@ import applicationReducer from "../slices/applicationSlice";
 import userReducer from "../slices/userSlice"
 import favoriteReducer from "../slices/favoriteSlice"
 import reviewReducer from "../slices/reviewSlice"
+import shelterReviewReducer from "../slices/shelterReviewSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +13,7 @@ export const store = configureStore({
     applications: applicationReducer,
     user:userReducer,
     favorites:favoriteReducer,
-    reviews:reviewReducer
+    reviews:reviewReducer,
+    shelterReviews: shelterReviewReducer,
   },
 });
