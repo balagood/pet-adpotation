@@ -1,4 +1,4 @@
-import ShelterReview from "../models/ShelterReview.js";
+import ShelterReview from "../models/shelterReview.js";
 import Shelter from "../models/Shelter.js";
 
 /**
