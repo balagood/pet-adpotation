@@ -253,7 +253,66 @@ export default function PetDetails() {
         </div>
       </div>
 
-      {/* Remaining reviews and shelter review code stays same */}
+      {/* Validation Message */}
+      {user?.role === "adopter" && !hasAdopted && (
+        <p className="text-red-500 mt-4">
+          You can review only after adopting this pet
+        </p>
+      )}
+
+      {/* Add Review */}
+      {user?.role === "adopter" && hasAdopted && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold">Add Review</h3>
+
+          <div className="flex gap-2 mt-2">
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="border p-2 rounded"
+            >
+              {[1,2,3,4,5].map(n => (
+                <option key={n} value={n}>{n} Star</option>
+              ))}
+            </select>
+
+            <input
+              value={comment}
+              onChange={(e)=>setComment(e.target.value)}
+              placeholder="Write comment..."
+              className="border p-2 flex-1 rounded"
+            />
+
+            <button
+              onClick={handleReview}
+              className="bg-green-500 text-white px-4 rounded"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reviews */}
+      <div className="mt-8">
+        <h3 className="text-xl font-bold">Reviews</h3>
+
+        {reviews.length === 0 && (
+          <p className="text-gray-500 mt-2">No reviews yet</p>
+        )}
+
+        <div className="space-y-3 mt-3">
+          {reviews.map((r) => (
+            <div key={r._id} className="border p-3 rounded-lg">
+              <p className="font-semibold">{r.userId?.name}</p>
+              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
+              <p className="text-gray-600">{r.comment}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    
+     
     </div>
   );
 }
