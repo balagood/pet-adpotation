@@ -311,8 +311,55 @@ export default function PetDetails() {
           ))}
         </div>
       </div>
-    
-     
+      <div className="mt-10">
+        <h3 className="text-xl font-bold">Shelter Reviews</h3>
+
+        {/* Add form */}
+        {user?.role === "adopter" && hasAdopted && (
+          <div className="flex gap-2 mt-4">
+            <select
+              value={shelterRating}
+              onChange={(e) => setShelterRating(Number(e.target.value))}
+              className="border p-2 rounded"
+            >
+              {[1, 2, 3, 4, 5].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+
+            <input
+              value={shelterComment}
+              onChange={(e) => setShelterComment(e.target.value)}
+              placeholder="Write shelter review..."
+              className="border p-2 flex-1 rounded"
+            />
+
+            <button
+              onClick={handleShelterReview}
+              className="bg-blue-500 text-white px-4 rounded"
+            >
+              Submit
+            </button>
+          </div>
+        )}
+
+        {/* List reviews */}
+        <div className="space-y-3 mt-4">
+          {shelterReviews?.length === 0 && (
+            <p className="text-gray-500">No shelter reviews yet</p>
+          )}
+
+          {shelterReviews?.map((r) => (
+            <div key={r._id} className="border p-3 rounded-lg">
+              <p className="font-semibold">{r.userId?.name}</p>
+              <p className="text-yellow-500">{"⭐".repeat(r.rating)}</p>
+              <p className="text-gray-600">{r.comment}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
