@@ -162,10 +162,34 @@ const Navbar = () => {
                     </li>
                   )}
 
+                  {user.role === "adopter" && (
+                    <li>
+                      <Link
+                        to="/my-meet-requests"
+                        className="flex item-center gap-2 px-3 py-2 bg-gray-800 rounded text-blue-300"
+                      >
+                        <FaClipboardList className="text-lg" />
+                        <span>Meet & Greet Requests</span>
+                      </Link>
+                    </li>
+                  )}
+
                   {user.role === "shelter" && (
                     <li>
                       <Link to="/applications/dashboard" className="flex item-center gap-2 px-3 py-2 bg-gray-800 rounded text-green-300">
                       <FaInbox className="text-lg" /><span>Adoption Requests</span>
+                      </Link>
+                    </li>
+                  )}
+
+                  {user.role === "shelter" && (
+                    <li>
+                      <Link
+                        to="/shelter-meet-requests"
+                        className="flex item-center gap-2 px-3 py-2 bg-gray-800 rounded text-yellow-300"
+                      >
+                        <FaClipboardList className="text-lg" />
+                        <span>Meet Requests</span>
                       </Link>
                     </li>
                   )}

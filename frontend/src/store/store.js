@@ -5,6 +5,7 @@ import userReducer from "../slices/userSlice"
 import favoriteReducer from "../slices/favoriteSlice"
 import reviewReducer from "../slices/reviewSlice"
 import shelterReviewReducer from "../slices/shelterReviewSlice";
+import meetGreetReducer from "../slices/meetGreetSlice";
 
 
 export const store = configureStore({
@@ -15,5 +16,6 @@ export const store = configureStore({
     favorites:favoriteReducer,
     reviews:reviewReducer,
     shelterReviews: shelterReviewReducer,
+    meetGreet: meetGreetReducer
   },
 });

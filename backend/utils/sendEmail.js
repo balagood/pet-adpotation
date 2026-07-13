@@ -6,17 +6,23 @@ const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
 export const sendEmail = async (toEmail, subject, htmlContent) => {
-  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+  try{
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
-  const sendSmtpEmail = {
-    sender: {
-      email: "balagood95@gmail.com",
-      name: "Pet Adoption",
-    },
-    to: [{ email: toEmail }],
-    subject,
-    htmlContent,
-  };
+    const sendSmtpEmail = {
+      sender: {
+        email: "balagood95@gmail.com",
+        name: "Pet Adoption",
+      },
+      to: [{ email: toEmail }],
+      subject,
+      htmlContent,
+    };
 
-  await apiInstance.sendTransacEmail(sendSmtpEmail);
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+  }
+  catch(error){
+    console.log("Brevo email error",error);
+  }
+  
 };

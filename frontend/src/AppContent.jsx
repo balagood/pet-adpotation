@@ -1,4 +1,4 @@
-import { useLocation, Routes, Route,Navigate } from "react-router-dom";
+import { useLocation, Routes, Route,Navigate,Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -17,6 +17,8 @@ import Register from "./pages/Register";
 import Favorites from "./pages/Favorites";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import MeetRequest from "./pages/MeetRequest";
+import ShelterRequest from "./pages/ShelterRequest";
 
 function AppContent() {
   const location = useLocation();
@@ -54,6 +56,10 @@ function AppContent() {
               element={user ? <Navigate to="/pets" /> : <Register />}
             />
 
+            
+
+            
+            
             {/* Home page show all pets */}
             <Route path="/" element={<Pets />} />
 
@@ -63,6 +69,9 @@ function AppContent() {
             {/* Pet details */}
             <Route path="/pet/:id" element={<PetDetails />} />
 
+            <Route path="/my-meet-requests" element={<MeetRequest />} />
+            <Route path="/shelter-meet-requests" element={<ShelterRequest />} />
+
             <Route
               path="/shelter-dashboard"
               element={
@@ -71,6 +80,8 @@ function AppContent() {
                       </ProtectedRoute>
               }
             />
+
+
 
             {/* Add pet */}
             <Route
