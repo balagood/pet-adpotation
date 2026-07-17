@@ -1,6 +1,7 @@
 import Application from "../models/Application.js"
 import Pet from "../models/Pet.js";
 import User from "../models/User.js";
+import Foster from "../models/Foster.js";
 
 import {sendEmail} from "../utils/sendEmail.js";
 
@@ -167,11 +168,9 @@ export const updateApplicationStatus = async (req, res) => {
     if (!application) return res.status(404).json({ message: "Application not found" });
       // If approved -> pet becomes adopted
     if (status === "approved") {
-      await Pet.findByIdAndUpdate(
-        application.petId,
-        { status: "adopted" }
-      );
+      await Pet.findByIdAndUpdate(application.petId,{ status: "adopted" });
 
+      await Foster.findOneAndUpdate({ petId: application.petId._id || application.petId },{adopterId: application.userId._id,});
       //Reject all other pending requests
       await Application.updateMany(
         {

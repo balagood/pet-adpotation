@@ -19,6 +19,13 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import MeetRequest from "./pages/MeetRequest";
 import ShelterRequest from "./pages/ShelterRequest";
+import FosterDashboard from "./pages/FosterDashboard";
+import ShelterFosterRequests from "./pages/ShelterFosterRequests";
+import FosterPetForm from "./pages/FosterPetForm";
+import FosterUpdates from "./pages/FosterUpdates";
+
+import FosterUpdateForm from "./components/FosterUpdateForm";
+
 
 function AppContent() {
   const location = useLocation();
@@ -113,6 +120,15 @@ function AppContent() {
               }
             />
 
+            <Route
+              path="/shelter-foster-requests"
+              element={
+                <ProtectedRoute role="shelter">
+                  <ShelterFosterRequests />
+                </ProtectedRoute>
+              }
+            />
+
             {/* My Applications */}
             <Route
               path="/applications"
@@ -129,6 +145,45 @@ function AppContent() {
               element={
                 <ProtectedRoute role="adopter">
                   <Favorites />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/add-foster-pet"
+              element={
+                <ProtectedRoute role="foster">
+                  <FosterPetForm  />
+                </ProtectedRoute>
+              }
+            />
+
+
+            <Route
+              path="/foster-dashboard"
+              element={
+                <ProtectedRoute role="foster">
+                  <FosterDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+
+            <Route
+              path="/foster-updates/:id"
+              element={
+                <ProtectedRoute role="foster">
+                  <FosterUpdates />
+                </ProtectedRoute>
+              }
+            />
+
+
+            <Route
+              path="/add-foster-update/:id"
+              element={
+                <ProtectedRoute role="foster">
+                  <FosterUpdateForm />
                 </ProtectedRoute>
               }
             />

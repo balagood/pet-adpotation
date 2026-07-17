@@ -30,7 +30,7 @@ export default function Login() {
       } else if (role === "adopter") {
         navigate("/pets");
       } else {
-        navigate("/pets");
+        navigate("/foster-dashboard");
       }
     } catch (err) {
       toast.error("Invalid Credential");

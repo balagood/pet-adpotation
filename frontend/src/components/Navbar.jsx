@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link,useNavigate  } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/userSlice";
-import {FaHome,FaSignOutAlt,FaPaw,FaHeart,FaClipboardList, FaSignInAlt,FaUserPlus,FaFileAlt,FaInbox, FaEye,FaPlusCircle,FaTasks,FaUserCircle} from "react-icons/fa";
+import {FaHome,FaSignOutAlt,FaPaw,FaHeart,FaClipboardList, FaSignInAlt,FaUserPlus,FaFileAlt,FaInbox, FaEye,FaPlusCircle,FaTasks,FaUserCircle,FaHandsHelping} from "react-icons/fa";
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(null);
@@ -26,7 +26,7 @@ const Navbar = () => {
       
       <h2 className="text-xl font-bold mb-6">Pet Adoption Platform</h2>
 
-
+      {(user?.role === "adopter" || user?.role === "shelter") && (
       <nav className="mb-4">
         <Link
           to="/pets"
@@ -34,7 +34,7 @@ const Navbar = () => {
         >
         <FaHome className="icon"/> <span>Home</span>
         </Link>
-      </nav>
+      </nav>)}
 
 
 
@@ -141,7 +141,7 @@ const Navbar = () => {
             </li>
           )}
           {/* 📄 APPLICATIONS */}
-          {user && (
+          {user?.role === "shelter" || user?.role === "adopter" && (
             <li>
               <button
                 onClick={() => toggleMenu("applications")}
@@ -179,8 +179,15 @@ const Navbar = () => {
                       <Link to="/applications/dashboard" className="flex item-center gap-2 px-3 py-2 bg-gray-800 rounded text-green-300">
                       <FaInbox className="text-lg" /><span>Adoption Requests</span>
                       </Link>
+
+                      <Link to="/shelter-foster-requests" className="flex items-center gap-2 hover:text-blue-600">
+                        <FaHandsHelping />
+                        Foster Requests
+                      </Link>
                     </li>
                   )}
+
+                  
 
                   {user.role === "shelter" && (
                     <li>
@@ -237,6 +244,26 @@ const Navbar = () => {
                 </ul>
               )} */}
             </li>
+          )}
+
+          {user?.role === "foster" && (
+            <>
+              <Link
+                to="/foster-dashboard"
+                className="flex items-center gap-2 hover:text-blue-600"
+              >
+                <FaHandsHelping />
+                My Foster Pets
+              </Link>
+              <Link
+                to="/add-foster-pet"
+                className="flex items-center gap-2 hover:text-blue-600"
+              >
+                <FaPlusCircle />
+                Add Foster Pet
+              </Link>
+            </>
+
           )}
 
         </ul>

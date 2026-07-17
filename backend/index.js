@@ -11,6 +11,8 @@ import favoriteRoutes from './routes/favorite.route.js'
 import reviewRoutes from './routes/review.route.js'
 import shelterReviewRoutes from "./routes/shelterReview.route.js";
 import meetGreetRoutes from "./routes/meetGreet.route.js";
+import fosterRoutes from "./routes/foster.route.js";
+import fosterUpdateRoutes from "./routes/fosterUpdate.route.js";
 
 import swaggerUI from 'swagger-ui-express'
 import swaggerSpec from './config/swagger.js'
@@ -45,6 +47,8 @@ app.use('/favorites',favoriteRoutes)
 app.use('/reviews',reviewRoutes)
 app.use('/shelter-review',shelterReviewRoutes)
 app.use("/meet-greet", meetGreetRoutes);
+app.use("/foster", fosterRoutes);
+app.use("/foster-update", fosterUpdateRoutes);
 
 
 

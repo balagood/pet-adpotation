@@ -116,7 +116,7 @@ npm run dev
 ### Adopter
 
 ```
-Email: testedlogin@gmail.com
+Email: testedadopter@gmail.com
 Password: tested
 ```
 
@@ -128,6 +128,11 @@ Password: shelter
 ```
 
 ---
+
+
+### Foster
+Email:javihec908@luckfeed.com
+Password:foster
 
 ## Screens
 

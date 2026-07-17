@@ -152,6 +152,10 @@ export default function Register() {
                 Shelter
               </option>
 
+              <option value="foster">
+                Foster
+              </option>
+
             </select>
 
           </div>
