@@ -141,7 +141,7 @@ const Navbar = () => {
             </li>
           )}
           {/* 📄 APPLICATIONS */}
-          {user?.role === "shelter" || user?.role === "adopter" && (
+          {(user?.role === "shelter" || user?.role ==="adopter") && (
             <li>
               <button
                 onClick={() => toggleMenu("applications")}
